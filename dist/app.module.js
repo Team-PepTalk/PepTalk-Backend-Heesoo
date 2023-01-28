@@ -10,21 +10,15 @@ exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const users_module_1 = require("./users/users.module");
 const typeorm_1 = require("@nestjs/typeorm");
-const user_entity_1 = require("./users/entities/user.entity");
+const typeorm_config_1 = require("./configs/typeorm.config");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [users_module_1.UsersModule, typeorm_1.TypeOrmModule.forRoot({
-                type: 'mysql',
-                host: 'localhost',
-                port: 3306,
-                username: 'root',
-                password: '',
-                database: 'Peptalk',
-                entities: [user_entity_1.User],
-                synchronize: true,
-            }),],
+        imports: [
+            typeorm_1.TypeOrmModule.forRoot(typeorm_config_1.typeORMConfig),
+            users_module_1.UsersModule
+        ],
         controllers: [],
         providers: [],
     })

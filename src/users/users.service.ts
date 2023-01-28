@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { NotFoundError } from 'rxjs';
+import { Repository } from 'typeorm';
 import { CreateUserDto, CreateUserRequestDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -10,27 +11,25 @@ import { UsersRepository } from './users.repository';
 export class UsersService {
 
   constructor(
-    @InjectRepository(UsersRepository)
-    private usersRepository: UsersRepository,
-    
-    private user: User,
-    private userRequestDto: CreateUserRequestDto,
-  ) {}
+    private usersRepository: UsersRepository
+    ) {}
 
-  createUser(createUserDto: CreateUserDto) {
+  createUser(createUserDto: CreateUserDto): Promise<User> {
     //return 'This action adds a new user';
     return this.usersRepository.createUser(createUserDto);
   }
 
+  /*
  findUserByUserId(userRequestDto: CreateUserDto): Boolean {
   const found = this.user.userId === this.userRequestDto.userId ? true : false;
-
+  
   if(!found) {
     throw new NotFoundException(`Can't find User with id ${userRequestDto}.`);
   }
 
   return found;
  }
+ */
 
  /*
   findAll() {

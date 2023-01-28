@@ -7,7 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersRepository = void 0;
+const typeorm_ex_decorator_1 = require("../configs/typeorm-ex.decorator");
 const typeorm_1 = require("typeorm");
+const user_entity_1 = require("./entities/user.entity");
 let UsersRepository = class UsersRepository extends typeorm_1.Repository {
     async createUser(createUserDto) {
         const { userId, password } = createUserDto;
@@ -20,7 +22,7 @@ let UsersRepository = class UsersRepository extends typeorm_1.Repository {
     }
 };
 UsersRepository = __decorate([
-    (0, typeorm_1.EntityRepository)()
+    (0, typeorm_ex_decorator_1.CustomRepository)(user_entity_1.User)
 ], UsersRepository);
 exports.UsersRepository = UsersRepository;
 //# sourceMappingURL=users.repository.js.map

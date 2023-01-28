@@ -13,10 +13,12 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+  /*
   @Post("/findByUserId")
   findUserId(@Body() userRequestDto: CreateUserDto) {
     return this.usersService.findUserByUserId(userRequestDto);
   }
+  */
 
   /*
   @Get()
