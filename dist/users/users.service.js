@@ -16,8 +16,22 @@ let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
     }
-    createUser(createUserDto) {
-        return this.usersRepository.createUser(createUserDto);
+    async createUser(createUserDto) {
+        const { userId, password } = createUserDto;
+        const user = this.usersRepository.create({
+            userId,
+            password
+        });
+        await this.usersRepository.save(user);
+        return user;
+    }
+    async existUserId(userRequestDto) {
+        const found = await this.usersRepository.findOne({ where: userRequestDto });
+        console.log(found);
+        if (!found) {
+            throw new common_1.NotFoundException(`Can't find User with userid ${userRequestDto.userId}`);
+        }
+        return found;
     }
 };
 UsersService = __decorate([

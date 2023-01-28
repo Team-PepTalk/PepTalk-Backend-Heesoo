@@ -7,9 +7,9 @@ exports.typeORMConfig = {
     host: 'localhost',
     port: 3306,
     username: 'root',
-    password: '',
+    password: '0000',
     database: 'Peptalk',
     entities: [__dirname + '/../**/*.entity.{js,ts}', user_entity_1.User],
-    synchronize: true,
+    synchronize: false,
 };
 //# sourceMappingURL=typeorm.config.js.map

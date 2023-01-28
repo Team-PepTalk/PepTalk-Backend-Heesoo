@@ -4,4 +4,5 @@ export declare class UsersController {
     private readonly usersService;
     constructor(usersService: UsersService);
     createUser(createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;
+    existUserId(userRequestDto: CreateUserDto): Promise<import("./entities/user.entity").User>;
 }

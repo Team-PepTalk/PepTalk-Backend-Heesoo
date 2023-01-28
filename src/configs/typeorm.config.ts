@@ -6,8 +6,8 @@ export const typeORMConfig : TypeOrmModuleOptions = {
     host: 'localhost',
     port: 3306,
     username: 'root',
-    password: '',
+    password: '0000',
     database: 'Peptalk',
     entities: [__dirname + '/../**/*.entity.{js,ts}', User],
-    synchronize: true,
+    synchronize: false,
 }

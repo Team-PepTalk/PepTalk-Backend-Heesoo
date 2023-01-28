@@ -14,9 +14,28 @@ export class UsersService {
     private usersRepository: UsersRepository
     ) {}
 
-  createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
     //return 'This action adds a new user';
-    return this.usersRepository.createUser(createUserDto);
+
+    const { userId, password } = createUserDto;
+    const user = this.usersRepository.create({
+      userId,
+      password
+    })
+
+    await this.usersRepository.save(user);
+    return user;
+  }
+
+  async existUserId (userRequestDto: CreateUserRequestDto) {
+    const found = await this.usersRepository.findOne({ where: userRequestDto });
+    console.log(found);
+
+    if (!found) {
+      throw new NotFoundException(`Can't find User with userid ${userRequestDto.userId}`);
+    }
+
+    return found;
   }
 
   /*
