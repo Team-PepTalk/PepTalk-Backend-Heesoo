@@ -1,9 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from 'rxjs';
-import { Repository } from 'typeorm';
 import { CreateUserDto, CreateUserRequestDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 
@@ -28,7 +24,7 @@ export class UsersService {
   }
 
   async existUserId (userRequestDto: CreateUserRequestDto) {
-    const found = await this.usersRepository.findOne({ where: userRequestDto });
+    const found = await this.usersRepository.findOne({ where : userRequestDto });
     console.log(found);
 
     if (!found) {
@@ -37,18 +33,6 @@ export class UsersService {
 
     return found;
   }
-
-  /*
- findUserByUserId(userRequestDto: CreateUserDto): Boolean {
-  const found = this.user.userId === this.userRequestDto.userId ? true : false;
-  
-  if(!found) {
-    throw new NotFoundException(`Can't find User with id ${userRequestDto}.`);
-  }
-
-  return found;
- }
- */
 
  /*
   findAll() {
