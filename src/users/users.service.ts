@@ -10,20 +10,23 @@ export class UsersService {
     private usersRepository: UsersRepository
     ) {}
 
+  // SignUp
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     //return 'This action adds a new user';
 
-    const { userId, password } = createUserDto;
+    const { userId, password, email } = createUserDto;
     const user = this.usersRepository.create({
       userId,
-      password
+      password,
+      email,
     })
 
     await this.usersRepository.save(user);
     return user;
   }
 
-  async existUserId (userRequestDto: CreateUserRequestDto) {
+  // find userId is exist or not
+  async existUserId(userRequestDto: CreateUserRequestDto) {
     const found = await this.usersRepository.findOne({ where : userRequestDto });
     console.log(found);
 
@@ -32,6 +35,20 @@ export class UsersService {
     }
 
     return found;
+  }
+
+  // update user(회원수정)
+  async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
+    const updateUser = await this.usersRepository.findOneById(id);
+
+    if (!updateUser) {
+      throw new NotFoundException(`User not found.`);
+    }
+    updateUser.userId = createUserDto.userId;
+    updateUser.password = createUserDto.password;
+    updateUser.email = createUserDto.email;
+
+    return await this.usersRepository.save(updateUser);
   }
 
  /*

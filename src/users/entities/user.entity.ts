@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { IsEmail, MaxLength, MinLength, Matches } from 'class-validator';
 
 @Entity()
 export class User {
@@ -11,4 +12,7 @@ export class User {
     
     @Column()
     password: string;
+
+    @Column()
+    email: string;
 }
