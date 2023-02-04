@@ -1,5 +1,4 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { IsEmail, MaxLength, MinLength, Matches } from 'class-validator';
 
 @Entity()
 export class User {

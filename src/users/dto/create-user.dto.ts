@@ -1,13 +1,13 @@
 import { IsEmail, MaxLength, MinLength, Matches } from 'class-validator';
 
 export class CreateUserDto {
-    @MaxLength(6)
-    @MinLength(15)
+    @MaxLength(15)
+    @MinLength(6)
     userId: string;
     
-    @MaxLength(6)
-    @MinLength(20)
-    @Matches(RegExp('^?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+]*$'))
+    @MaxLength(20)
+    @MinLength(6)
+    //@Matches(/^\$2[ayb]\$[\d]\$[./A-Za-z0-9]$/)
     password: string;
 
     @IsEmail()

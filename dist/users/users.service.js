@@ -17,10 +17,11 @@ let UsersService = class UsersService {
         this.usersRepository = usersRepository;
     }
     async createUser(createUserDto) {
-        const { userId, password } = createUserDto;
+        const { userId, password, email } = createUserDto;
         const user = this.usersRepository.create({
             userId,
-            password
+            password,
+            email
         });
         await this.usersRepository.save(user);
         return user;
@@ -32,6 +33,23 @@ let UsersService = class UsersService {
             throw new common_1.NotFoundException(`Can't find User with userid ${userRequestDto.userId}`);
         }
         return found;
+    }
+    async updateUser(id, createUserDto) {
+        const user = await this.usersRepository.findOneById(id);
+        if (!user) {
+            throw new common_1.NotFoundException(`User not found.`);
+        }
+        user.userId = createUserDto.userId;
+        user.password = createUserDto.password;
+        user.email = createUserDto.email;
+        return await this.usersRepository.save(user);
+    }
+    async deleteUser(id) {
+        const user = await this.usersRepository.findOneById(id);
+        if (!user) {
+            throw new common_1.NotFoundException(`User not found.`);
+        }
+        return this.usersRepository.delete(user);
     }
 };
 UsersService = __decorate([

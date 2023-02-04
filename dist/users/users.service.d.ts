@@ -6,4 +6,6 @@ export declare class UsersService {
     constructor(usersRepository: UsersRepository);
     createUser(createUserDto: CreateUserDto): Promise<User>;
     existUserId(userRequestDto: CreateUserRequestDto): Promise<User>;
+    updateUser(id: number, createUserDto: CreateUserDto): Promise<User>;
+    deleteUser(id: number): Promise<import("typeorm").DeleteResult>;
 }

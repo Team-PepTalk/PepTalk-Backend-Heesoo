@@ -18,7 +18,7 @@ export class UsersService {
     const user = this.usersRepository.create({
       userId,
       password,
-      email,
+      email
     })
 
     await this.usersRepository.save(user);
@@ -39,16 +39,27 @@ export class UsersService {
 
   // update user(회원수정)
   async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
-    const updateUser = await this.usersRepository.findOneById(id);
+    const user = await this.usersRepository.findOneById(id);
 
-    if (!updateUser) {
+    if (!user) {
       throw new NotFoundException(`User not found.`);
     }
-    updateUser.userId = createUserDto.userId;
-    updateUser.password = createUserDto.password;
-    updateUser.email = createUserDto.email;
+    user.userId = createUserDto.userId;
+    user.password = createUserDto.password;
+    user.email = createUserDto.email;
 
-    return await this.usersRepository.save(updateUser);
+    return await this.usersRepository.save(user);
+  }
+
+  // delete user(회원탈퇴)
+  async deleteUser(id: number) {
+    const user = await this.usersRepository.findOneById(id);
+
+    if(!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    return this.usersRepository.delete(user);
   }
 
  /*

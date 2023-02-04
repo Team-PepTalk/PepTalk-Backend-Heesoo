@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const users_module_1 = require("./users/users.module");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_config_1 = require("./configs/typeorm.config");
+const core_1 = require("@nestjs/core");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -20,7 +21,12 @@ AppModule = __decorate([
             users_module_1.UsersModule
         ],
         controllers: [],
-        providers: [],
+        providers: [
+            {
+                provide: core_1.APP_PIPE,
+                useClass: common_1.ValidationPipe,
+            },
+        ],
     })
 ], AppModule);
 exports.AppModule = AppModule;
