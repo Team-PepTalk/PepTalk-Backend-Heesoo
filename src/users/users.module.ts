@@ -4,11 +4,10 @@ import { UsersController } from './users.controller';
 import { UsersRepository } from './users.repository';
 import { TypeOrmExModule } from 'src/configs/typeorm-ex.module';
 import { AuthModule } from 'src/auth/auth.module';
-import { AuthService } from 'src/auth/auth.service';
-import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    forwardRef(() => AuthModule),
     TypeOrmExModule.forCustomRepository(
       [UsersRepository]
     )

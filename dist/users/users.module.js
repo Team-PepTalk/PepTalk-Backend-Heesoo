@@ -12,11 +12,13 @@ const users_service_1 = require("./users.service");
 const users_controller_1 = require("./users.controller");
 const users_repository_1 = require("./users.repository");
 const typeorm_ex_module_1 = require("../configs/typeorm-ex.module");
+const auth_module_1 = require("../auth/auth.module");
 let UsersModule = class UsersModule {
 };
 UsersModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            (0, common_1.forwardRef)(() => auth_module_1.AuthModule),
             typeorm_ex_module_1.TypeOrmExModule.forCustomRepository([users_repository_1.UsersRepository])
         ],
         controllers: [users_controller_1.UsersController],

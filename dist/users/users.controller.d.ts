@@ -1,5 +1,5 @@
 import { UsersService } from './users.service';
-import { CreateUserDto, UserRequestDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from 'src/auth/auth.service';
 export declare class UsersController {
     private readonly usersService;
@@ -10,7 +10,6 @@ export declare class UsersController {
         access_token: string;
     }>;
     me(req: any): any;
-    existUserId(requestDto: UserRequestDto): Promise<import("./entities/user.entity").User>;
     updateUser(id: number, createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;
     deleteUser(id: number): Promise<import("typeorm").DeleteResult>;
 }

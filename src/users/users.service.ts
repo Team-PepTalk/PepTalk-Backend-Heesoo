@@ -26,6 +26,15 @@ export class UsersService {
     return user;
   }
 
+  async findOne(username: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({
+      where: {
+        userId : username
+      }
+    });
+  }
+
+  /*
   // find userId
   async findUserId(userId: string): Promise<User | undefined> {
     console.log("service start");
@@ -43,6 +52,7 @@ export class UsersService {
 
     return found;
   }
+  */
 
   // update user(회원수정)
   async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {

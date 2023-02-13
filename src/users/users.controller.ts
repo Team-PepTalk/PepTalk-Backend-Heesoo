@@ -30,11 +30,13 @@ export class UsersController {
     return req.user;
   }
 
+  /*
   @Post("/existUserId")
   existUserId(@Body() requestDto: UserRequestDto) {
     console.log("controller");
     return this.usersService.findUserId(requestDto.userId);
   }
+  */
 
   @Put(':id')
   updateUser(@Param('id') id : number, @Body() createUserDto: CreateUserDto) {
