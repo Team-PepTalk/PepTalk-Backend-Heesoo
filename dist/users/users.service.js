@@ -26,11 +26,16 @@ let UsersService = class UsersService {
         await this.usersRepository.save(user);
         return user;
     }
-    async existUserId(userRequestDto) {
-        const found = await this.usersRepository.findOne({ where: userRequestDto });
+    async findUserId(userId) {
+        console.log("service start");
+        const found = await this.usersRepository.findOne({
+            where: {
+                userId
+            }
+        });
         console.log(found);
         if (!found) {
-            throw new common_1.NotFoundException(`Can't find User with userid ${userRequestDto.userId}`);
+            throw new common_1.HttpException('User with this id does not exist', common_1.HttpStatus.NOT_FOUND);
         }
         return found;
     }

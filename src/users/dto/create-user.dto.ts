@@ -14,6 +14,11 @@ export class CreateUserDto {
     email: string;
 }
 
-export class CreateUserRequestDto {
+export class LoginUserDto {
+    userId: string;
+    password: string;
+}
+
+export class UserRequestDto {
     userId: string;
 }

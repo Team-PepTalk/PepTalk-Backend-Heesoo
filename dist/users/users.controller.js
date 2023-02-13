@@ -16,15 +16,26 @@ exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
+const local_auth_guard_1 = require("../auth/guard/local-auth.guard");
+const auth_service_1 = require("../auth/auth.service");
+const jwt_auth_guard_1 = require("../auth/guard/jwt-auth.guard");
 let UsersController = class UsersController {
-    constructor(usersService) {
+    constructor(usersService, authService) {
         this.usersService = usersService;
+        this.authService = authService;
     }
     createUser(createUserDto) {
         return this.usersService.createUser(createUserDto);
     }
-    existUserId(userRequestDto) {
-        return this.usersService.existUserId(userRequestDto);
+    async login(req) {
+        return this.authService.login(req.user);
+    }
+    me(req) {
+        return req.user;
+    }
+    existUserId(requestDto) {
+        console.log("controller");
+        return this.usersService.findUserId(requestDto.userId);
     }
     updateUser(id, createUserDto) {
         return this.usersService.updateUser(id, createUserDto);
@@ -41,10 +52,26 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "createUser", null);
 __decorate([
+    (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),
+    (0, common_1.Post)('/auth/login'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "login", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Get)('profile'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "me", null);
+__decorate([
     (0, common_1.Post)("/existUserId"),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_user_dto_1.CreateUserRequestDto]),
+    __metadata("design:paramtypes", [create_user_dto_1.UserRequestDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "existUserId", null);
 __decorate([
@@ -64,7 +91,8 @@ __decorate([
 ], UsersController.prototype, "deleteUser", null);
 UsersController = __decorate([
     (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __metadata("design:paramtypes", [users_service_1.UsersService,
+        auth_service_1.AuthService])
 ], UsersController);
 exports.UsersController = UsersController;
 //# sourceMappingURL=users.controller.js.map

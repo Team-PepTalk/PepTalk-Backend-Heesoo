@@ -1,5 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto, CreateUserRequestDto } from './dto/create-user.dto';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { CreateUserDto, LoginUserDto, UserRequestDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 
@@ -25,13 +26,19 @@ export class UsersService {
     return user;
   }
 
-  // find userId is exist or not
-  async existUserId(userRequestDto: CreateUserRequestDto) {
-    const found = await this.usersRepository.findOne({ where : userRequestDto });
+  // find userId
+  async findUserId(userId: string): Promise<User | undefined> {
+    console.log("service start");
+    const found = await this.usersRepository.findOne({ 
+      where : {
+        userId
+      }
+    });
     console.log(found);
 
     if (!found) {
-      throw new NotFoundException(`Can't find User with userid ${userRequestDto.userId}`);
+      throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND,);
+      //throw new NotFoundException(`Can't find User with userid ${userId}`);
     }
 
     return found;

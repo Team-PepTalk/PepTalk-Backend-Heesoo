@@ -1,8 +1,11 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { UsersRepository } from './users.repository';
 import { TypeOrmExModule } from 'src/configs/typeorm-ex.module';
+import { AuthModule } from 'src/auth/auth.module';
+import { AuthService } from 'src/auth/auth.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -11,6 +14,7 @@ import { TypeOrmExModule } from 'src/configs/typeorm-ex.module';
     )
   ],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
+  exports: [UsersService],
 })
 export class UsersModule {}

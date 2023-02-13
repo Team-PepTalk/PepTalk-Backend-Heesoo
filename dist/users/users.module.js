@@ -20,7 +20,8 @@ UsersModule = __decorate([
             typeorm_ex_module_1.TypeOrmExModule.forCustomRepository([users_repository_1.UsersRepository])
         ],
         controllers: [users_controller_1.UsersController],
-        providers: [users_service_1.UsersService]
+        providers: [users_service_1.UsersService],
+        exports: [users_service_1.UsersService],
     })
 ], UsersModule);
 exports.UsersModule = UsersModule;
