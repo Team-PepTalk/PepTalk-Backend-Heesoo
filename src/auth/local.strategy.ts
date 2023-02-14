@@ -11,6 +11,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     async validate(userId: string, password: string): Promise<any> {
+        console.log("guard start");
         const user = await this.authService.validateUser(userId, password);
         
         if(!user) {

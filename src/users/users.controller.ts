@@ -21,6 +21,7 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('/auth/login')
   async login(@Request() req) {
+    console.log("login controller start")
     return this.authService.login(req.user);
   }
 
@@ -30,13 +31,10 @@ export class UsersController {
     return req.user;
   }
 
-  /*
   @Post("/existUserId")
   existUserId(@Body() requestDto: UserRequestDto) {
-    console.log("controller");
-    return this.usersService.findUserId(requestDto.userId);
+    return this.usersService.findOne(requestDto.userId);
   }
-  */
 
   @Put(':id')
   updateUser(@Param('id') id : number, @Body() createUserDto: CreateUserDto) {

@@ -20,6 +20,7 @@ let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)
         this.authService = authService;
     }
     async validate(userId, password) {
+        console.log("guard start");
         const user = await this.authService.validateUser(userId, password);
         if (!user) {
             throw new common_1.UnauthorizedException();

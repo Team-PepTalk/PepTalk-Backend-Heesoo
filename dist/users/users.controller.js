@@ -28,10 +28,14 @@ let UsersController = class UsersController {
         return this.usersService.createUser(createUserDto);
     }
     async login(req) {
+        console.log("login controller start");
         return this.authService.login(req.user);
     }
     me(req) {
         return req.user;
+    }
+    existUserId(requestDto) {
+        return this.usersService.findOne(requestDto.userId);
     }
     updateUser(id, createUserDto) {
         return this.usersService.updateUser(id, createUserDto);
@@ -63,6 +67,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "me", null);
+__decorate([
+    (0, common_1.Post)("/existUserId"),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [create_user_dto_1.UserRequestDto]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "existUserId", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),

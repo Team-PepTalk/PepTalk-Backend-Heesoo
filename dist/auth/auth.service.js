@@ -21,13 +21,17 @@ let AuthService = class AuthService {
     }
     async validateUser(userId, password) {
         var _a;
+        console.log("auth service / validateUser method start");
         const user = await this.usersService.findOne(userId);
+        console.log("auth service / validateUser method 비밀번호 비교 시작");
         if (!(await bcrypt.compare(password, (_a = user === null || user === void 0 ? void 0 : user.password) !== null && _a !== void 0 ? _a : ''))) {
             return null;
         }
+        console.log("user" + user);
         return user;
     }
     async login(user) {
+        console.log("auth service / login method start");
         const payload = { sub: user.userId };
         return {
             access_token: this.jwtService.sign(payload),

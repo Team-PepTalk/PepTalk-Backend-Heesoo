@@ -12,22 +12,23 @@ export class UsersService {
     ) {}
   
   // 비밀번호 암호화
-  async transformPassword(user: CreateUserDto): Promise<void> {
-    user.password = await bcrypt.hash(user.password, 10);
-    return Promise.resolve();
+  async transformPassword(user: CreateUserDto) {
+    return user.password = await bcrypt.hash(user.password, 10);
+    
   }
 
   // SignUp
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     //return 'This action adds a new user';
-
+    const cryptedssword = await this.transformPassword(createUserDto);
+    
     const { userId, password, email } = createUserDto;
     const user = this.usersRepository.create({
       userId,
-      password,
+      password : cryptedssword,
       email
     })
-    await this.transformPassword(createUserDto);
+
 
     return await this.usersRepository.save(user);
     //return user;

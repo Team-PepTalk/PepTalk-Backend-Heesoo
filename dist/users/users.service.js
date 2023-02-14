@@ -18,17 +18,16 @@ let UsersService = class UsersService {
         this.usersRepository = usersRepository;
     }
     async transformPassword(user) {
-        user.password = await bcrypt.hash(user.password, 10);
-        return Promise.resolve();
+        return user.password = await bcrypt.hash(user.password, 10);
     }
     async createUser(createUserDto) {
+        const cryptedssword = await this.transformPassword(createUserDto);
         const { userId, password, email } = createUserDto;
         const user = this.usersRepository.create({
             userId,
-            password,
+            password: cryptedssword,
             email
         });
-        await this.transformPassword(createUserDto);
         return await this.usersRepository.save(user);
     }
     async findOne(username) {
