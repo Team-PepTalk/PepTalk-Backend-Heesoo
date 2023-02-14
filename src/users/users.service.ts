@@ -1,11 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from 'rxjs';
-import { Repository } from 'typeorm';
-import { CreateUserDto, CreateUserRequestDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -13,42 +10,66 @@ export class UsersService {
   constructor(
     private usersRepository: UsersRepository
     ) {}
-
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
-    //return 'This action adds a new user';
-
-    const { userId, password } = createUserDto;
-    const user = this.usersRepository.create({
-      userId,
-      password
-    })
-
-    await this.usersRepository.save(user);
-    return user;
+  
+  // 비밀번호 암호화
+  async transformPassword(user: CreateUserDto) {
+    return user.password = await bcrypt.hash(user.password, 10);
+    
   }
 
-  async existUserId (userRequestDto: CreateUserRequestDto) {
-    const found = await this.usersRepository.findOne({ where: userRequestDto });
-    console.log(found);
+  // SignUp
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    //return 'This action adds a new user';
+    const cryptedssword = await this.transformPassword(createUserDto);
+    
+    const { userId, password, email } = createUserDto;
+    const user = this.usersRepository.create({
+      userId,
+      password : cryptedssword,
+      email
+    })
+
+    return await this.usersRepository.save(user);
+    //return user;
+  }
+
+  async findOne(username: string): Promise<User | undefined> {
+    const found = await this.usersRepository.findOne({
+      where: {
+        userId : username
+      }
+    });
 
     if (!found) {
-      throw new NotFoundException(`Can't find User with userid ${userRequestDto.userId}`);
+      throw new NotFoundException(`Can't find User with userid ${username}`);
     }
-
     return found;
   }
 
-  /*
- findUserByUserId(userRequestDto: CreateUserDto): Boolean {
-  const found = this.user.userId === this.userRequestDto.userId ? true : false;
-  
-  if(!found) {
-    throw new NotFoundException(`Can't find User with id ${userRequestDto}.`);
+  // update user(회원수정)
+  async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
+    const user = await this.usersRepository.findOneById(id);
+
+    if (!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+    user.userId = createUserDto.userId;
+    user.password = createUserDto.password;
+    user.email = createUserDto.email;
+
+    return await this.usersRepository.save(user);
   }
 
-  return found;
- }
- */
+  // delete user(회원탈퇴)
+  async deleteUser(id: number) {
+    const user = await this.usersRepository.findOneById(id);
+
+    if(!user) {
+      throw new NotFoundException(`User not found.`);
+    }
+
+    return this.usersRepository.delete(user);
+  }
 
  /*
   findAll() {

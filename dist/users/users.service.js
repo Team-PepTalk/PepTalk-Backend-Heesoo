@@ -12,26 +12,51 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const users_repository_1 = require("./users.repository");
+const bcrypt = require("bcrypt");
 let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
     }
+    async transformPassword(user) {
+        return user.password = await bcrypt.hash(user.password, 10);
+    }
     async createUser(createUserDto) {
-        const { userId, password } = createUserDto;
+        const cryptedssword = await this.transformPassword(createUserDto);
+        const { userId, password, email } = createUserDto;
         const user = this.usersRepository.create({
             userId,
-            password
+            password: cryptedssword,
+            email
         });
-        await this.usersRepository.save(user);
-        return user;
+        return await this.usersRepository.save(user);
     }
-    async existUserId(userRequestDto) {
-        const found = await this.usersRepository.findOne({ where: userRequestDto });
-        console.log(found);
+    async findOne(username) {
+        const found = await this.usersRepository.findOne({
+            where: {
+                userId: username
+            }
+        });
         if (!found) {
-            throw new common_1.NotFoundException(`Can't find User with userid ${userRequestDto.userId}`);
+            throw new common_1.NotFoundException(`Can't find User with userid ${username}`);
         }
         return found;
+    }
+    async updateUser(id, createUserDto) {
+        const user = await this.usersRepository.findOneById(id);
+        if (!user) {
+            throw new common_1.NotFoundException(`User not found.`);
+        }
+        user.userId = createUserDto.userId;
+        user.password = createUserDto.password;
+        user.email = createUserDto.email;
+        return await this.usersRepository.save(user);
+    }
+    async deleteUser(id) {
+        const user = await this.usersRepository.findOneById(id);
+        if (!user) {
+            throw new common_1.NotFoundException(`User not found.`);
+        }
+        return this.usersRepository.delete(user);
     }
 };
 UsersService = __decorate([
