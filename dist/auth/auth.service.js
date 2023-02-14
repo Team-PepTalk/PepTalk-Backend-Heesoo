@@ -27,7 +27,7 @@ let AuthService = class AuthService {
         if (!(await bcrypt.compare(password, (_a = user === null || user === void 0 ? void 0 : user.password) !== null && _a !== void 0 ? _a : ''))) {
             return null;
         }
-        console.log("user" + user);
+        console.log("user" + user.id);
         return user;
     }
     async login(user) {

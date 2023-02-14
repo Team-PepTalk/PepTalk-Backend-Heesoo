@@ -29,7 +29,6 @@ export class UsersService {
       email
     })
 
-
     return await this.usersRepository.save(user);
     //return user;
   }
