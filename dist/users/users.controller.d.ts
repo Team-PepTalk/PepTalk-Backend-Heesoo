@@ -7,7 +7,7 @@ export declare class UsersController {
     constructor(usersService: UsersService, authService: AuthService);
     createUser(createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;
     login(req: any): Promise<{
-        access_token: any;
+        access_token: string;
     }>;
     me(req: any): any;
     existUserId(requestDto: UserRequestDto): Promise<import("./entities/user.entity").User>;
