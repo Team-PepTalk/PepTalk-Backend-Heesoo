@@ -1,5 +1,5 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { LoginUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -13,14 +13,20 @@ export class AuthService {
         private jwtService: JwtService,    
     ) {}
 
-    async validateUser(username: string, password: string): Promise<any> {
-        const user = await this.usersService.findOne(username);
+    async validateUser(userId: string, password: string): Promise<any> {
+        const user = await this.usersService.findOne(userId);
 
-        if (user && user.password === password) {
+
+        // DB에는 해시된 암호만 저장 후 데이터 비교
+        if (!(await bcrypt.compare(password, user?.password ?? ''))) {
+            return null;
+        }
+
+        /*if (user && user.password === password) {
             const { password, ...result } = user;
             return result;
-          }
-          return null;
+        }*/
+        return user;
     }
 
     async login(user: any) {

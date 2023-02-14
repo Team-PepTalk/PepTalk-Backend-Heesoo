@@ -1,8 +1,8 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { CreateUserDto, LoginUserDto, UserRequestDto } from './dto/create-user.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -10,6 +10,12 @@ export class UsersService {
   constructor(
     private usersRepository: UsersRepository
     ) {}
+  
+  // 비밀번호 암호화
+  async transformPassword(user: CreateUserDto): Promise<void> {
+    user.password = await bcrypt.hash(user.password, 10);
+    return Promise.resolve();
+  }
 
   // SignUp
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -21,38 +27,24 @@ export class UsersService {
       password,
       email
     })
+    await this.transformPassword(createUserDto);
 
-    await this.usersRepository.save(user);
-    return user;
+    return await this.usersRepository.save(user);
+    //return user;
   }
 
   async findOne(username: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({
+    const found = await this.usersRepository.findOne({
       where: {
         userId : username
       }
     });
-  }
-
-  /*
-  // find userId
-  async findUserId(userId: string): Promise<User | undefined> {
-    console.log("service start");
-    const found = await this.usersRepository.findOne({ 
-      where : {
-        userId
-      }
-    });
-    console.log(found);
 
     if (!found) {
-      throw new HttpException('User with this id does not exist', HttpStatus.NOT_FOUND,);
-      //throw new NotFoundException(`Can't find User with userid ${userId}`);
+      throw new NotFoundException(`Can't find User with userid ${username}`);
     }
-
     return found;
   }
-  */
 
   // update user(회원수정)
   async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {

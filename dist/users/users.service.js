@@ -12,9 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const users_repository_1 = require("./users.repository");
+const bcrypt = require("bcrypt");
 let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
+    }
+    async transformPassword(user) {
+        user.password = await bcrypt.hash(user.password, 10);
+        return Promise.resolve();
     }
     async createUser(createUserDto) {
         const { userId, password, email } = createUserDto;
@@ -23,15 +28,19 @@ let UsersService = class UsersService {
             password,
             email
         });
-        await this.usersRepository.save(user);
-        return user;
+        await this.transformPassword(createUserDto);
+        return await this.usersRepository.save(user);
     }
     async findOne(username) {
-        return this.usersRepository.findOne({
+        const found = await this.usersRepository.findOne({
             where: {
                 userId: username
             }
         });
+        if (!found) {
+            throw new common_1.NotFoundException(`Can't find User with userid ${username}`);
+        }
+        return found;
     }
     async updateUser(id, createUserDto) {
         const user = await this.usersRepository.findOneById(id);
