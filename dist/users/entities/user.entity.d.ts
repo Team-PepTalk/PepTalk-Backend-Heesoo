@@ -3,4 +3,5 @@ export declare class User {
     userId: string;
     password: string;
     email: string;
+    currentHashedRefreshToken?: string;
 }

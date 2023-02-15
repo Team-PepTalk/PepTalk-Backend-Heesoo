@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Body, Param, Delete, ValidationPipe, Put, UseGuards, Request, Inject, forwardRef } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ValidationPipe, Put, UseGuards, Request, Inject, Response, Res, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, LoginUserDto, UserRequestDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from 'src/auth/guard/local-auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { JwtRefreshGuard } from 'src/auth/guard/jwt-refresh.guard';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -20,9 +22,55 @@ export class UsersController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/auth/login')
-  async login(@Request() req) {
+  async login(@Request() req, @Response({ passthrough: true }) res) {
     console.log("login controller start")
-    return this.authService.login(req.user);
+    const user = req.user;
+    const {
+      accessToken,
+      ...accessOption
+    } = this.authService.getCookieWithJwtAccessToken(user.id);
+
+    const {
+      refreshToken,
+      ...refreshOption
+    } = this.authService.getCookieWithJwtRefreshToken(user.id);
+
+    await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
+
+    res.cookie('Authentication', accessToken, accessOption);
+    res.cookie('Refresh', refreshToken, refreshOption);
+
+    return user;
+    
+
+    //return this.authService.login(req.user);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('/logout')
+  async logOut(@Request() req, @Response({ passthrough: true }) res) {
+    const {
+      accessOption,
+      refreshOption,
+    } = this.authService.getCookieForLogOut();
+    await this.usersService.removeRefreshToken(req.user.userId);
+
+    res.cookie('Authentication', '', accessOption);
+    res.cookie('Refresh', '', refreshOption);
+
+    return "logout success";
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Get('/refresh')
+  refresh(@Request() req, @Response({ passthrough: true })res){
+    const user = req.user;
+    const {
+      accessToken,
+      ...accessOption
+    } = this.authService.getCookieWithJwtAccessToken(user.id);
+    res.cookie('Authentication', accessToken, accessOption);
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -45,34 +93,4 @@ export class UsersController {
   deleteUser(@Param('id') id: number) {
     return this.usersService.deleteUser(id);
   }
-
-  /*
-  @Post("/findByUserId")
-  findUserId(@Body() userRequestDto: CreateUserDto) {
-    return this.usersService.findUserByUserId(userRequestDto);
-  }
-  */
-
-  /*
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
-  */
 }

@@ -6,9 +6,9 @@ export declare class UsersController {
     private authService;
     constructor(usersService: UsersService, authService: AuthService);
     createUser(createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;
-    login(req: any): Promise<{
-        access_token: string;
-    }>;
+    login(req: any, res: any): Promise<any>;
+    logOut(req: any, res: any): Promise<string>;
+    refresh(req: any, res: any): any;
     me(req: any): any;
     existUserId(requestDto: UserRequestDto): Promise<import("./entities/user.entity").User>;
     updateUser(id: number, createUserDto: CreateUserDto): Promise<import("./entities/user.entity").User>;

@@ -9,26 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.JwtStrategy = void 0;
+exports.LocalStrategy = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
-const passport_jwt_1 = require("passport-jwt");
-const constants_1 = require("./constants");
-let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(passport_jwt_1.Strategy) {
-    constructor() {
-        super({
-            jwtFromRequest: passport_jwt_1.ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: constants_1.jwtConstants.secret,
-        });
+const passport_local_1 = require("passport-local");
+const auth_service_1 = require("../auth.service");
+let LocalStrategy = class LocalStrategy extends (0, passport_1.PassportStrategy)(passport_local_1.Strategy, 'local') {
+    constructor(authService) {
+        super();
+        this.authService = authService;
     }
-    async validate(payload) {
-        return { userUid: payload.userUid };
+    async validate(userId, password) {
+        console.log("guard start");
+        const user = await this.authService.validateUser(userId, password);
+        if (!user) {
+            throw new common_1.UnauthorizedException();
+        }
+        return user;
     }
 };
-JwtStrategy = __decorate([
+LocalStrategy = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
-], JwtStrategy);
-exports.JwtStrategy = JwtStrategy;
-//# sourceMappingURL=jwt.strategy.js.map
+    __metadata("design:paramtypes", [auth_service_1.AuthService])
+], LocalStrategy);
+exports.LocalStrategy = LocalStrategy;
+//# sourceMappingURL=local.strategy.js.map

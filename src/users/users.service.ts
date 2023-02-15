@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
+import { async } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -33,6 +34,9 @@ export class UsersService {
     //return user;
   }
 
+  //Google SignUp
+  async createGoogleSignUp(createUser) {}
+
   async findOne(username: string): Promise<User | undefined> {
     const found = await this.usersRepository.findOne({
       where: {
@@ -44,6 +48,10 @@ export class UsersService {
       throw new NotFoundException(`Can't find User with userid ${username}`);
     }
     return found;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    return await this.usersRepository.findOneBy({email});
   }
 
   // update user(회원수정)
@@ -71,21 +79,38 @@ export class UsersService {
     return this.usersRepository.delete(user);
   }
 
- /*
-  findAll() {
-    return `This action returns all users`;
+  // DB에 Refresh Token을 저장하기 때문에 해당 토큰을 가져오고, 갱신하고, 삭제함
+  async setCurrentRefreshToken(refreshToken: string, id: number) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.usersRepository.update(id, { currentHashedRefreshToken });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
+    const user = await this.getById(id);
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async removeRefreshToken(id: number) {
+    return this.usersRepository.update(id, {
+      currentHashedRefreshToken: null,
+    });
   }
+  
+  async getById(id: number) {
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    const found = await this.usersRepository.findOne({where: { id }});
+
+    if (!found) {
+      throw new NotFoundException(`Can't find User with userid ${id}`);
+    }
+    return found;
   }
-  */
 }
