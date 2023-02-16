@@ -1,9 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/users/users.repository';
-import { ConfigService } from '@nestjs/config';
 import { JwtConfig } from 'src/configs/jwt-config';
 
 @Injectable()
@@ -11,18 +10,15 @@ export class AuthService {
     constructor(
         private usersService: UsersService,
         private jwtService: JwtService,
-        private usersRepository: UsersRepository,
-        private readonly configService: ConfigService,    
+        private usersRepository: UsersRepository,   
     ) {}
 
-    async validateUser(userId: string, password: string): Promise<any> {
-        console.log("auth service / validateUser method start")
-        const user = await this.usersService.findOne(userId);
+    async validateUser(email: string, password: string): Promise<any> {
+        const user = await this.usersService.findOneByEmail(email);
 
-        console.log("auth service / validateUser method 비밀번호 비교 시작")
         // DB에는 해시된 암호만 저장 후 데이터 비교
         if (!(await bcrypt.compare(password, user?.password ?? ''))) {
-            return null;
+            throw new HttpException("로그인에 실패했습니다.", HttpStatus.BAD_REQUEST);
         }
 
         /*if (user && user.password === password) {
@@ -35,7 +31,7 @@ export class AuthService {
 
     async login(user: any) {
         console.log("auth service / login method start")
-        const payload = { sub: user.userId };
+        const payload = { sub: user.email };
         return {
             access_token: this.jwtService.sign(payload),
         };
@@ -51,8 +47,8 @@ export class AuthService {
         if (!user) {
             user = this.usersRepository.create({
                 email: req.user.email,
-                userId: req.user.email,
-                password: "password",
+                nickname: req.user.firstName,
+                password: null,
             });
 
             await this.usersRepository.save(user); 
@@ -61,7 +57,7 @@ export class AuthService {
         res.cookie('Authentication', req.user.accessToken);
         res.cookie('Refresh', req.user.refreshToken);
         res.redirect(
-            process.env.GOOGLE_REDIRECT_URL
+            "http://localhost:3000"
         );
 
         return {

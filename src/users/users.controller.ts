@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Param, Delete, ValidationPipe, Put, UseGuards, Request, Inject, Response, Res, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, LoginUserDto, UserRequestDto } from './dto/req/create-user.dto';
 import { LocalAuthGuard } from 'src/auth/guard/local-auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
@@ -18,14 +17,14 @@ export class UsersController {
     private authService: AuthService,
   ) {}
   
-  @Post("/create")
+  @Post("/signUp")
   async createUser(@Body(ValidationPipe) createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponse> {
     const response = await this.usersService.createUser(createUserRequestDto);
     return CreateUserResponse.newResponse(SuccessCode.CREATE_USER_SUCCESS, response);
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('/auth/login')
+  @Post('/login')
   async login(@Request() req, @Response({ passthrough: true }) res) {
     const user = req.user;
     const {
@@ -53,7 +52,7 @@ export class UsersController {
       accessOption,
       refreshOption,
     } = this.authService.getCookieForLogOut();
-    await this.usersService.removeRefreshToken(req.user.userId);
+    await this.usersService.removeRefreshToken(req.user.id);
 
     res.cookie('Authentication', '', accessOption);
     res.cookie('Refresh', '', refreshOption);
@@ -79,12 +78,14 @@ export class UsersController {
     return req.user;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateUserInfo(@Param('id') id : number, @Body() updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponse> {
     const response = await this.usersService.updateUserInfo(id, updateUserRequestDto);
     return UpdateUserResponse.newResponse(SuccessCode.UPDATE_USER_SUCCESS, response);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteUser(@Param('id') id: number): BaseResponse {
     this.usersService.deleteUser(id);

@@ -11,16 +11,6 @@ const typeorm_ex_decorator_1 = require("../configs/typeorm-ex.decorator");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 let UsersRepository = class UsersRepository extends typeorm_1.Repository {
-    async createUser(createUserDto) {
-        const { userId, password, email } = createUserDto;
-        const user = this.create({
-            userId,
-            password,
-            email
-        });
-        await this.save(user);
-        return user;
-    }
 };
 UsersRepository = __decorate([
     (0, typeorm_ex_decorator_1.CustomRepository)(user_entity_1.User)

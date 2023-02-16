@@ -38,29 +38,25 @@ const users_service_1 = require("../users/users.service");
 const bcrypt = __importStar(require("bcrypt"));
 const jwt_1 = require("@nestjs/jwt");
 const users_repository_1 = require("../users/users.repository");
-const config_1 = require("@nestjs/config");
 const jwt_config_1 = require("../configs/jwt-config");
 let AuthService = class AuthService {
-    constructor(usersService, jwtService, usersRepository, configService) {
+    constructor(usersService, jwtService, usersRepository) {
         this.usersService = usersService;
         this.jwtService = jwtService;
         this.usersRepository = usersRepository;
-        this.configService = configService;
     }
-    async validateUser(userId, password) {
+    async validateUser(email, password) {
         var _a;
-        console.log("auth service / validateUser method start");
-        const user = await this.usersService.findOne(userId);
-        console.log("auth service / validateUser method 비밀번호 비교 시작");
+        const user = await this.usersService.findOneByEmail(email);
         if (!(await bcrypt.compare(password, (_a = user === null || user === void 0 ? void 0 : user.password) !== null && _a !== void 0 ? _a : ''))) {
-            return null;
+            throw new common_1.HttpException("로그인에 실패했습니다.", common_1.HttpStatus.BAD_REQUEST);
         }
         console.log("user" + user.id);
         return user;
     }
     async login(user) {
         console.log("auth service / login method start");
-        const payload = { sub: user.userId };
+        const payload = { sub: user.email };
         return {
             access_token: this.jwtService.sign(payload),
         };
@@ -73,14 +69,14 @@ let AuthService = class AuthService {
         if (!user) {
             user = this.usersRepository.create({
                 email: req.user.email,
-                userId: req.user.email,
-                password: "password",
+                nickname: req.user.firstName,
+                password: null,
             });
             await this.usersRepository.save(user);
         }
         res.cookie('Authentication', req.user.accessToken);
         res.cookie('Refresh', req.user.refreshToken);
-        res.redirect(process.env.GOOGLE_REDIRECT_URL);
+        res.redirect("http://localhost:3000");
         return {
             message: 'User information from google',
             user
@@ -138,8 +134,7 @@ AuthService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [users_service_1.UsersService,
         jwt_1.JwtService,
-        users_repository_1.UsersRepository,
-        config_1.ConfigService])
+        users_repository_1.UsersRepository])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map

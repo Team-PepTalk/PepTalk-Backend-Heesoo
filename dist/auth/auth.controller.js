@@ -26,7 +26,7 @@ let AuthController = class AuthController {
     }
 };
 __decorate([
-    (0, common_1.Get)('/login/google'),
+    (0, common_1.Get)('/google'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('google')),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Response)()),
@@ -35,7 +35,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "googleAuthRedirect", null);
 AuthController = __decorate([
-    (0, common_1.Controller)(),
+    (0, common_1.Controller)("oauth"),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 exports.AuthController = AuthController;

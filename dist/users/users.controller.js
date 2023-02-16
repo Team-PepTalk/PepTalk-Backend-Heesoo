@@ -58,7 +58,7 @@ let UsersController = class UsersController {
     }
     async logOut(req, res) {
         const { accessOption, refreshOption, } = this.authService.getCookieForLogOut();
-        await this.usersService.removeRefreshToken(req.user.userId);
+        await this.usersService.removeRefreshToken(req.user.id);
         res.cookie('Authentication', '', accessOption);
         res.cookie('Refresh', '', refreshOption);
         return "logout success";
@@ -82,7 +82,7 @@ let UsersController = class UsersController {
     }
 };
 __decorate([
-    (0, common_1.Post)("/create"),
+    (0, common_1.Post)("/signUp"),
     __param(0, (0, common_1.Body)(common_1.ValidationPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_user_request_dto_1.CreateUserRequestDto]),
@@ -90,7 +90,7 @@ __decorate([
 ], UsersController.prototype, "createUser", null);
 __decorate([
     (0, common_1.UseGuards)(local_auth_guard_1.LocalAuthGuard),
-    (0, common_1.Post)('/auth/login'),
+    (0, common_1.Post)('/login'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Response)({ passthrough: true })),
     __metadata("design:type", Function),
@@ -124,6 +124,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "me", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -132,6 +133,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "updateUserInfo", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

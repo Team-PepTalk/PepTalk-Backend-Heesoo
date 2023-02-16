@@ -1,12 +1,11 @@
-import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/req/create-user.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
 import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
 import { CreateUserResponseDto } from './dto/res/create-user-response.dto';
-import { UpdateUserResponse, UpdateUserResponseDto } from './dto/res/update-user-response.dto';
+import { UpdateUserResponseDto } from './dto/res/update-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -16,7 +15,6 @@ export class UsersService {
   // 비밀번호 암호화
   async transformPassword(user: CreateUserRequestDto) {
     return user.password = await bcrypt.hash(user.password, 10);
-    
   }
 
   // SignUp
@@ -25,14 +23,14 @@ export class UsersService {
     
     const { nickname, password, email } = createUserRequestDto;
     const user = this.usersRepository.create({
-      userId: nickname,
+      nickname,
       password : cryptedssword,
       email
     })
 
     const signUpUser = await this.usersRepository.save(user);
 
-    return CreateUserResponseDto.of(signUpUser.userId);
+    return CreateUserResponseDto.of(signUpUser.nickname);
   }
 
   async findOneByEmail(email: string): Promise<User> {
@@ -47,11 +45,11 @@ export class UsersService {
       throw new HttpException("사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
     }
     
-    user.userId = updateUserRequestDto.userId;
+    user.nickname = updateUserRequestDto.nickname;
     user.email = updateUserRequestDto.email;
 
     const updateUser = await this.usersRepository.save(user);
-    return UpdateUserResponseDto.of(updateUser.userId, updateUser.email);
+    return UpdateUserResponseDto.of(updateUser.nickname, updateUser.email);
   }
 
   // delete user(회원탈퇴)
@@ -88,6 +86,7 @@ export class UsersService {
     return this.usersRepository.update(id, {
       currentHashedRefreshToken: null,
     });
+    
   }
   
   async getById(id: number) {
@@ -98,4 +97,6 @@ export class UsersService {
     }
     return found;
   }
+
+  
 }

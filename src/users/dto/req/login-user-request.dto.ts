@@ -1,4 +1,9 @@
+import { IsEmail } from "class-validator";
+
 export class LoginUserRequestDto {
-    userId: string;
+    
+    @IsEmail()
+    email: string;
+    
     password: string;
 }

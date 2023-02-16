@@ -49,12 +49,12 @@ let UsersService = class UsersService {
         const cryptedssword = await this.transformPassword(createUserRequestDto);
         const { nickname, password, email } = createUserRequestDto;
         const user = this.usersRepository.create({
-            userId: nickname,
+            nickname,
             password: cryptedssword,
             email
         });
         const signUpUser = await this.usersRepository.save(user);
-        return create_user_response_dto_1.CreateUserResponseDto.of(signUpUser.userId);
+        return create_user_response_dto_1.CreateUserResponseDto.of(signUpUser.nickname);
     }
     async findOneByEmail(email) {
         return await this.usersRepository.findOneBy({ email });
@@ -64,10 +64,10 @@ let UsersService = class UsersService {
         if (!user) {
             throw new common_1.HttpException("사용자를 찾을 수 없습니다.", common_1.HttpStatus.BAD_REQUEST);
         }
-        user.userId = updateUserRequestDto.userId;
+        user.nickname = updateUserRequestDto.nickname;
         user.email = updateUserRequestDto.email;
         const updateUser = await this.usersRepository.save(user);
-        return update_user_response_dto_1.UpdateUserResponseDto.of(updateUser.userId, updateUser.email);
+        return update_user_response_dto_1.UpdateUserResponseDto.of(updateUser.nickname, updateUser.email);
     }
     async deleteUser(id) {
         const user = await this.usersRepository.findOneById(id);

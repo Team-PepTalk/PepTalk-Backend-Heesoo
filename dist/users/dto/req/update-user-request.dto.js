@@ -14,10 +14,10 @@ const class_validator_1 = require("class-validator");
 class UpdateUserRequestDto {
 }
 __decorate([
-    (0, class_validator_1.MaxLength)(15),
-    (0, class_validator_1.MinLength)(6),
+    (0, class_validator_1.MaxLength)(7),
+    (0, class_validator_1.MinLength)(3),
     __metadata("design:type", String)
-], UpdateUserRequestDto.prototype, "userId", void 0);
+], UpdateUserRequestDto.prototype, "nickname", void 0);
 __decorate([
     (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)

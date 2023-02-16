@@ -1,4 +1,4 @@
 export declare class UpdateUserRequestDto {
-    userId: string;
+    nickname: string;
     email: string;
 }
