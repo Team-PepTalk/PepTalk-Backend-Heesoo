@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto/req/create-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
 import { async } from 'rxjs';
+import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
 
 @Injectable()
 export class UsersService {
@@ -55,15 +56,15 @@ export class UsersService {
   }
 
   // update user(회원수정)
-  async updateUser(id: number, createUserDto: CreateUserDto): Promise<User> {
+  async updateUser(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<User> {
     const user = await this.usersRepository.findOneById(id);
 
     if (!user) {
       throw new NotFoundException(`User not found.`);
     }
-    user.userId = createUserDto.userId;
-    user.password = createUserDto.password;
-    user.email = createUserDto.email;
+    user.userId = updateUserRequestDto.userId;
+    user.password = updateUserRequestDto.password;
+    user.email = updateUserRequestDto.email;
 
     return await this.usersRepository.save(user);
   }
@@ -76,7 +77,7 @@ export class UsersService {
       throw new NotFoundException(`User not found.`);
     }
 
-    return this.usersRepository.delete(user);
+    return this.usersRepository.delete(user.id);
   }
 
   // DB에 Refresh Token을 저장하기 때문에 해당 토큰을 가져오고, 갱신하고, 삭제함

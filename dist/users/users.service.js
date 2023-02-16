@@ -68,14 +68,14 @@ let UsersService = class UsersService {
     async findOneByEmail(email) {
         return await this.usersRepository.findOneBy({ email });
     }
-    async updateUser(id, createUserDto) {
+    async updateUser(id, updateUserRequestDto) {
         const user = await this.usersRepository.findOneById(id);
         if (!user) {
             throw new common_1.NotFoundException(`User not found.`);
         }
-        user.userId = createUserDto.userId;
-        user.password = createUserDto.password;
-        user.email = createUserDto.email;
+        user.userId = updateUserRequestDto.userId;
+        user.password = updateUserRequestDto.password;
+        user.email = updateUserRequestDto.email;
         return await this.usersRepository.save(user);
     }
     async deleteUser(id) {
@@ -83,7 +83,7 @@ let UsersService = class UsersService {
         if (!user) {
             throw new common_1.NotFoundException(`User not found.`);
         }
-        return this.usersRepository.delete(user);
+        return this.usersRepository.delete(user.id);
     }
     async setCurrentRefreshToken(refreshToken, id) {
         const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);

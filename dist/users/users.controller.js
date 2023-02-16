@@ -22,15 +22,21 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
-const create_user_dto_1 = require("./dto/create-user.dto");
+const create_user_dto_1 = require("./dto/req/create-user.dto");
 const local_auth_guard_1 = require("../auth/guard/local-auth.guard");
 const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/guard/jwt-auth.guard");
 const jwt_refresh_guard_1 = require("../auth/guard/jwt-refresh.guard");
+const base_response_dto_1 = __importDefault(require("../base-response.dto"));
+const update_user_response_dto_1 = require("./dto/res/update-user-response.dto");
+const update_user_request_dto_1 = require("./dto/req/update-user-request.dto");
 let UsersController = class UsersController {
     constructor(usersService, authService) {
         this.usersService = usersService;
@@ -68,11 +74,13 @@ let UsersController = class UsersController {
     existUserId(requestDto) {
         return this.usersService.findOne(requestDto.userId);
     }
-    updateUser(id, createUserDto) {
-        return this.usersService.updateUser(id, createUserDto);
+    updateUser(id, updateUserRequestDto) {
+        this.usersService.updateUser(id, updateUserRequestDto);
+        return update_user_response_dto_1.UpdateUserResponse.newResponse("\uD68C\uC6D0 \uC218\uC815\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.", updateUserRequestDto);
     }
     deleteUser(id) {
-        return this.usersService.deleteUser(id);
+        this.usersService.deleteUser(id);
+        return base_response_dto_1.default.toSuccessResponse("\uD68C\uC6D0 \uC0AD\uC81C\uB97C \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.");
     }
 };
 __decorate([
@@ -129,15 +137,15 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, create_user_dto_1.CreateUserDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Number, update_user_request_dto_1.UpdateUserRequestDto]),
+    __metadata("design:returntype", update_user_response_dto_1.UpdateUserResponse)
 ], UsersController.prototype, "updateUser", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", base_response_dto_1.default)
 ], UsersController.prototype, "deleteUser", null);
 UsersController = __decorate([
     (0, common_1.Controller)('users'),

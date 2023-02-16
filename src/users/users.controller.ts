@@ -1,11 +1,13 @@
 import { Controller, Get, Post, Body, Param, Delete, ValidationPipe, Put, UseGuards, Request, Inject, Response, Res, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, LoginUserDto, UserRequestDto } from './dto/create-user.dto';
+import { CreateUserDto, LoginUserDto, UserRequestDto } from './dto/req/create-user.dto';
 import { LocalAuthGuard } from 'src/auth/guard/local-auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { JwtRefreshGuard } from 'src/auth/guard/jwt-refresh.guard';
-import { AuthGuard } from '@nestjs/passport';
+import BaseResponse from 'src/base-response.dto';
+import { UpdateUserResponse } from './dto/res/update-user-response.dto';
+import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
 
 @Controller('users')
 export class UsersController {
@@ -85,12 +87,14 @@ export class UsersController {
   }
 
   @Put(':id')
-  updateUser(@Param('id') id : number, @Body() createUserDto: CreateUserDto) {
-    return this.usersService.updateUser(id, createUserDto);
+  updateUser(@Param('id') id : number, @Body() updateUserRequestDto: UpdateUserRequestDto): UpdateUserResponse {
+    this.usersService.updateUser(id, updateUserRequestDto);
+    return UpdateUserResponse.newResponse(SuccessCode.FIX_USER_SUCCESS, updateUserRequestDto);
   }
 
   @Delete(':id')
-  deleteUser(@Param('id') id: number) {
-    return this.usersService.deleteUser(id);
+  deleteUser(@Param('id') id: number): BaseResponse {
+    this.usersService.deleteUser(id);
+    return BaseResponse.toSuccessResponse(SuccessCode.DELETE_USER_SUCCESS);
   }
 }
