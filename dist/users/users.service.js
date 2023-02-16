@@ -36,6 +36,8 @@ exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
 const users_repository_1 = require("./users.repository");
 const bcrypt = __importStar(require("bcrypt"));
+const create_user_response_dto_1 = require("./dto/res/create-user-response.dto");
+const update_user_response_dto_1 = require("./dto/res/update-user-response.dto");
 let UsersService = class UsersService {
     constructor(usersRepository) {
         this.usersRepository = usersRepository;
@@ -43,15 +45,16 @@ let UsersService = class UsersService {
     async transformPassword(user) {
         return user.password = await bcrypt.hash(user.password, 10);
     }
-    async createUser(createUserDto) {
-        const cryptedssword = await this.transformPassword(createUserDto);
-        const { userId, password, email } = createUserDto;
+    async createUser(createUserRequestDto) {
+        const cryptedssword = await this.transformPassword(createUserRequestDto);
+        const { nickname, password, email } = createUserRequestDto;
         const user = this.usersRepository.create({
-            userId,
+            userId: nickname,
             password: cryptedssword,
             email
         });
-        return await this.usersRepository.save(user);
+        const signUpUser = await this.usersRepository.save(user);
+        return create_user_response_dto_1.CreateUserResponseDto.of(signUpUser.userId);
     }
     async createGoogleSignUp(createUser) { }
     async findOne(username) {
@@ -68,15 +71,15 @@ let UsersService = class UsersService {
     async findOneByEmail(email) {
         return await this.usersRepository.findOneBy({ email });
     }
-    async updateUser(id, updateUserRequestDto) {
+    async updateUserInfo(id, updateUserRequestDto) {
         const user = await this.usersRepository.findOneById(id);
         if (!user) {
             throw new common_1.NotFoundException(`User not found.`);
         }
         user.userId = updateUserRequestDto.userId;
-        user.password = updateUserRequestDto.password;
         user.email = updateUserRequestDto.email;
-        return await this.usersRepository.save(user);
+        const updateUser = await this.usersRepository.save(user);
+        return update_user_response_dto_1.UpdateUserResponseDto.of(updateUser.userId, updateUser.email);
     }
     async deleteUser(id) {
         const user = await this.usersRepository.findOneById(id);

@@ -1,9 +1,18 @@
 import BaseResponse from "src/base-response.dto";
 
-class UpdateUserResponseDto {
-    userId: string;
-    password: string;
+export class UpdateUserResponseDto {
+    nickname: string;
     email: string;
+
+    constructor(nickname: string, email: string) {
+        this.nickname = nickname;
+        this.email = email;
+    }
+
+    static of(nickname: string, email: string) {
+        return new UpdateUserResponseDto(nickname, email);
+    }
+
 }
 
 export class UpdateUserResponse extends BaseResponse {
@@ -13,12 +22,6 @@ export class UpdateUserResponse extends BaseResponse {
         super(status, success, msg);
         this.data = data;
     }
-
-    /*
-    of(status: number, success: boolean, msg: string, data: UpdateUserResponseDto): UpdateUserResponse {
-        return new UpdateUserResponse(status, success, msg, data);
-    }
-    */
 
     static newResponse(successCode: SuccessCode, data: UpdateUserResponseDto): UpdateUserResponse  {
         return new UpdateUserResponse(200, true, successCode, data);

@@ -3,8 +3,10 @@ import { CreateUserDto } from './dto/req/create-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
-import { async } from 'rxjs';
 import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
+import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
+import { CreateUserResponseDto } from './dto/res/create-user-response.dto';
+import { UpdateUserResponse, UpdateUserResponseDto } from './dto/res/update-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -14,25 +16,27 @@ export class UsersService {
     ) {}
   
   // 비밀번호 암호화
-  async transformPassword(user: CreateUserDto) {
+  async transformPassword(user: CreateUserRequestDto) {
     return user.password = await bcrypt.hash(user.password, 10);
     
   }
 
   // SignUp
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponseDto> {
     //return 'This action adds a new user';
-    const cryptedssword = await this.transformPassword(createUserDto);
+    const cryptedssword = await this.transformPassword(createUserRequestDto);
     
-    const { userId, password, email } = createUserDto;
+    const { nickname, password, email } = createUserRequestDto;
     const user = this.usersRepository.create({
-      userId,
+      userId: nickname,
       password : cryptedssword,
       email
     })
 
-    return await this.usersRepository.save(user);
-    //return user;
+    const signUpUser = await this.usersRepository.save(user);
+
+    return CreateUserResponseDto.of(signUpUser.userId);
+    //return await this.usersRepository.save(user);
   }
 
   //Google SignUp
@@ -55,18 +59,19 @@ export class UsersService {
     return await this.usersRepository.findOneBy({email});
   }
 
-  // update user(회원수정)
-  async updateUser(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<User> {
+  // update userInfo(회원정보수정)
+  async updateUserInfo(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponseDto> {
     const user = await this.usersRepository.findOneById(id);
 
     if (!user) {
       throw new NotFoundException(`User not found.`);
     }
+    
     user.userId = updateUserRequestDto.userId;
-    user.password = updateUserRequestDto.password;
     user.email = updateUserRequestDto.email;
 
-    return await this.usersRepository.save(user);
+    const updateUser = await this.usersRepository.save(user);
+    return UpdateUserResponseDto.of(updateUser.userId, updateUser.email);
   }
 
   // delete user(회원탈퇴)

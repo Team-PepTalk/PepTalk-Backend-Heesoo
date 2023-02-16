@@ -1,9 +1,9 @@
 import { IsEmail, MaxLength, MinLength } from "class-validator";
 
 export class CreateUserRequestDto {
-    @MaxLength(15)
-    @MinLength(6)
-    userId: string;
+    @MaxLength(7)
+    @MinLength(2)
+    nickname: string;
     
     @MaxLength(20)
     @MinLength(6)

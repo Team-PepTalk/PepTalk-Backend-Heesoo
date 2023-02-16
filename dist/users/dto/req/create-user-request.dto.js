@@ -14,10 +14,10 @@ const class_validator_1 = require("class-validator");
 class CreateUserRequestDto {
 }
 __decorate([
-    (0, class_validator_1.MaxLength)(15),
-    (0, class_validator_1.MinLength)(6),
+    (0, class_validator_1.MaxLength)(7),
+    (0, class_validator_1.MinLength)(2),
     __metadata("design:type", String)
-], CreateUserRequestDto.prototype, "userId", void 0);
+], CreateUserRequestDto.prototype, "nickname", void 0);
 __decorate([
     (0, class_validator_1.MaxLength)(20),
     (0, class_validator_1.MinLength)(6),

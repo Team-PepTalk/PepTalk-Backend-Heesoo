@@ -8,6 +8,8 @@ import { JwtRefreshGuard } from 'src/auth/guard/jwt-refresh.guard';
 import BaseResponse from 'src/base-response.dto';
 import { UpdateUserResponse } from './dto/res/update-user-response.dto';
 import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
+import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
+import { CreateUserResponse } from './dto/res/create-user-response.dto';
 
 @Controller('users')
 export class UsersController {
@@ -18,8 +20,9 @@ export class UsersController {
   ) {}
   
   @Post("/create")
-  createUser(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
+  async createUser(@Body(ValidationPipe) createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponse> {
+    const response = await this.usersService.createUser(createUserRequestDto);
+    return CreateUserResponse.newResponse(SuccessCode.CREATE_USER_SUCCESS, response);
   }
 
   @UseGuards(LocalAuthGuard)
@@ -87,9 +90,9 @@ export class UsersController {
   }
 
   @Put(':id')
-  updateUser(@Param('id') id : number, @Body() updateUserRequestDto: UpdateUserRequestDto): UpdateUserResponse {
-    this.usersService.updateUser(id, updateUserRequestDto);
-    return UpdateUserResponse.newResponse(SuccessCode.FIX_USER_SUCCESS, updateUserRequestDto);
+  async updateUserInfo(@Param('id') id : number, @Body() updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponse> {
+    const response = await this.usersService.updateUserInfo(id, updateUserRequestDto);
+    return UpdateUserResponse.newResponse(SuccessCode.UPDATE_USER_SUCCESS, response);
   }
 
   @Delete(':id')

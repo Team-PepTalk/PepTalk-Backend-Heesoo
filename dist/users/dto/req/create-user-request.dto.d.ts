@@ -1,5 +1,5 @@
 export declare class CreateUserRequestDto {
-    userId: string;
+    nickname: string;
     password: string;
     email: string;
 }
