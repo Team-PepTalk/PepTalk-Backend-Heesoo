@@ -29,7 +29,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
-const create_user_dto_1 = require("./dto/req/create-user.dto");
 const local_auth_guard_1 = require("../auth/guard/local-auth.guard");
 const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/guard/jwt-auth.guard");
@@ -49,7 +48,6 @@ let UsersController = class UsersController {
         return create_user_response_dto_1.CreateUserResponse.newResponse("\uD68C\uC6D0\uAC00\uC785\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.", response);
     }
     async login(req, res) {
-        console.log("login controller start");
         const user = req.user;
         const _a = this.authService.getCookieWithJwtAccessToken(user.id), { accessToken } = _a, accessOption = __rest(_a, ["accessToken"]);
         const _b = this.authService.getCookieWithJwtRefreshToken(user.id), { refreshToken } = _b, refreshOption = __rest(_b, ["refreshToken"]);
@@ -73,9 +71,6 @@ let UsersController = class UsersController {
     }
     me(req) {
         return req.user;
-    }
-    existUserId(requestDto) {
-        return this.usersService.findOne(requestDto.userId);
     }
     async updateUserInfo(id, updateUserRequestDto) {
         const response = await this.usersService.updateUserInfo(id, updateUserRequestDto);
@@ -128,13 +123,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "me", null);
-__decorate([
-    (0, common_1.Post)("/existUserId"),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_user_dto_1.UserRequestDto]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "existUserId", null);
 __decorate([
     (0, common_1.Put)(':id'),
     __param(0, (0, common_1.Param)('id')),

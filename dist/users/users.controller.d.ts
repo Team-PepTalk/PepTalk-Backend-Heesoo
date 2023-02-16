@@ -1,5 +1,4 @@
 import { UsersService } from './users.service';
-import { UserRequestDto } from './dto/req/create-user.dto';
 import { AuthService } from 'src/auth/auth.service';
 import BaseResponse from 'src/base-response.dto';
 import { UpdateUserResponse } from './dto/res/update-user-response.dto';
@@ -15,7 +14,6 @@ export declare class UsersController {
     logOut(req: any, res: any): Promise<string>;
     refresh(req: any, res: any): any;
     me(req: any): any;
-    existUserId(requestDto: UserRequestDto): Promise<import("./entities/user.entity").User>;
     updateUserInfo(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponse>;
     deleteUser(id: number): BaseResponse;
 }

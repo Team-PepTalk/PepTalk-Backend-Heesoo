@@ -56,25 +56,13 @@ let UsersService = class UsersService {
         const signUpUser = await this.usersRepository.save(user);
         return create_user_response_dto_1.CreateUserResponseDto.of(signUpUser.userId);
     }
-    async createGoogleSignUp(createUser) { }
-    async findOne(username) {
-        const found = await this.usersRepository.findOne({
-            where: {
-                userId: username
-            }
-        });
-        if (!found) {
-            throw new common_1.NotFoundException(`Can't find User with userid ${username}`);
-        }
-        return found;
-    }
     async findOneByEmail(email) {
         return await this.usersRepository.findOneBy({ email });
     }
     async updateUserInfo(id, updateUserRequestDto) {
         const user = await this.usersRepository.findOneById(id);
         if (!user) {
-            throw new common_1.NotFoundException(`User not found.`);
+            throw new common_1.HttpException("사용자를 찾을 수 없습니다.", common_1.HttpStatus.BAD_REQUEST);
         }
         user.userId = updateUserRequestDto.userId;
         user.email = updateUserRequestDto.email;
@@ -84,7 +72,7 @@ let UsersService = class UsersService {
     async deleteUser(id) {
         const user = await this.usersRepository.findOneById(id);
         if (!user) {
-            throw new common_1.NotFoundException(`User not found.`);
+            throw new common_1.HttpException("사용자를 찾을 수 없습니다.", common_1.HttpStatus.BAD_REQUEST);
         }
         return this.usersRepository.delete(user.id);
     }
@@ -107,7 +95,7 @@ let UsersService = class UsersService {
     async getById(id) {
         const found = await this.usersRepository.findOne({ where: { id } });
         if (!found) {
-            throw new common_1.NotFoundException(`Can't find User with userid ${id}`);
+            throw new common_1.HttpException(`${id}의 사용자를 찾을 수 없습니다.`, common_1.HttpStatus.BAD_REQUEST);
         }
         return found;
     }

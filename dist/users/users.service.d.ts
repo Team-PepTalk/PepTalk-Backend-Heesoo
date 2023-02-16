@@ -9,8 +9,6 @@ export declare class UsersService {
     constructor(usersRepository: UsersRepository);
     transformPassword(user: CreateUserRequestDto): Promise<string>;
     createUser(createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponseDto>;
-    createGoogleSignUp(createUser: any): Promise<void>;
-    findOne(username: string): Promise<User | undefined>;
     findOneByEmail(email: string): Promise<User>;
     updateUserInfo(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponseDto>;
     deleteUser(id: number): Promise<import("typeorm").DeleteResult>;

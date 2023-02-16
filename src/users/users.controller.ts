@@ -13,7 +13,6 @@ import { CreateUserResponse } from './dto/res/create-user-response.dto';
 
 @Controller('users')
 export class UsersController {
-  // 종속성 주입
   constructor(
     private readonly usersService: UsersService,
     private authService: AuthService,
@@ -28,7 +27,6 @@ export class UsersController {
   @UseGuards(LocalAuthGuard)
   @Post('/auth/login')
   async login(@Request() req, @Response({ passthrough: true }) res) {
-    console.log("login controller start")
     const user = req.user;
     const {
       accessToken,
@@ -46,9 +44,6 @@ export class UsersController {
     res.cookie('Refresh', refreshToken, refreshOption);
 
     return user;
-    
-
-    //return this.authService.login(req.user);
   }
 
   @UseGuards(JwtRefreshGuard)
@@ -82,11 +77,6 @@ export class UsersController {
   @Get('profile')
   me (@Request() req) {
     return req.user;
-  }
-
-  @Post("/existUserId")
-  existUserId(@Body() requestDto: UserRequestDto) {
-    return this.usersService.findOne(requestDto.userId);
   }
 
   @Put(':id')

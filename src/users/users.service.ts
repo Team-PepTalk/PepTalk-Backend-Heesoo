@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/req/create-user.dto';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
@@ -11,9 +11,7 @@ import { UpdateUserResponse, UpdateUserResponseDto } from './dto/res/update-user
 @Injectable()
 export class UsersService {
 
-  constructor(
-    private usersRepository: UsersRepository
-    ) {}
+  constructor(private usersRepository: UsersRepository) {}
   
   // 비밀번호 암호화
   async transformPassword(user: CreateUserRequestDto) {
@@ -23,7 +21,6 @@ export class UsersService {
 
   // SignUp
   async createUser(createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponseDto> {
-    //return 'This action adds a new user';
     const cryptedssword = await this.transformPassword(createUserRequestDto);
     
     const { nickname, password, email } = createUserRequestDto;
@@ -36,23 +33,6 @@ export class UsersService {
     const signUpUser = await this.usersRepository.save(user);
 
     return CreateUserResponseDto.of(signUpUser.userId);
-    //return await this.usersRepository.save(user);
-  }
-
-  //Google SignUp
-  async createGoogleSignUp(createUser) {}
-
-  async findOne(username: string): Promise<User | undefined> {
-    const found = await this.usersRepository.findOne({
-      where: {
-        userId : username
-      }
-    });
-
-    if (!found) {
-      throw new NotFoundException(`Can't find User with userid ${username}`);
-    }
-    return found;
   }
 
   async findOneByEmail(email: string): Promise<User> {
@@ -64,7 +44,7 @@ export class UsersService {
     const user = await this.usersRepository.findOneById(id);
 
     if (!user) {
-      throw new NotFoundException(`User not found.`);
+      throw new HttpException("사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
     }
     
     user.userId = updateUserRequestDto.userId;
@@ -79,7 +59,7 @@ export class UsersService {
     const user = await this.usersRepository.findOneById(id);
 
     if(!user) {
-      throw new NotFoundException(`User not found.`);
+      throw new HttpException("사용자를 찾을 수 없습니다.", HttpStatus.BAD_REQUEST);
     }
 
     return this.usersRepository.delete(user.id);
@@ -111,11 +91,10 @@ export class UsersService {
   }
   
   async getById(id: number) {
-
     const found = await this.usersRepository.findOne({where: { id }});
 
     if (!found) {
-      throw new NotFoundException(`Can't find User with userid ${id}`);
+      throw new HttpException(`${id}의 사용자를 찾을 수 없습니다.`, HttpStatus.BAD_REQUEST);
     }
     return found;
   }
