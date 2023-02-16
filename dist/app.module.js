@@ -13,6 +13,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_config_1 = require("./configs/typeorm.config");
 const core_1 = require("@nestjs/core");
 const auth_module_1 = require("./auth/auth.module");
+const config_1 = require("@nestjs/config");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -21,6 +22,9 @@ AppModule = __decorate([
             users_module_1.UsersModule,
             auth_module_1.AuthModule,
             typeorm_1.TypeOrmModule.forRoot(typeorm_config_1.typeORMConfig),
+            config_1.ConfigModule.forRoot({
+                envFilePath: ['./src/config/.development.env'],
+            }),
         ],
         controllers: [],
         providers: [

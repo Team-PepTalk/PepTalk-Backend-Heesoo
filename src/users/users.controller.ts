@@ -1,28 +1,75 @@
-import { Controller, Get, Post, Body, Param, Delete, ValidationPipe, Put, UseGuards, Request, Inject, forwardRef } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ValidationPipe, Put, UseGuards, Request, Inject, Response, Res, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, LoginUserDto, UserRequestDto } from './dto/create-user.dto';
 import { LocalAuthGuard } from 'src/auth/guard/local-auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { JwtRefreshGuard } from 'src/auth/guard/jwt-refresh.guard';
+import BaseResponse from 'src/base-response.dto';
+import { UpdateUserResponse } from './dto/res/update-user-response.dto';
+import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
+import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
+import { CreateUserResponse } from './dto/res/create-user-response.dto';
 
 @Controller('users')
 export class UsersController {
-  // 종속성 주입
   constructor(
     private readonly usersService: UsersService,
     private authService: AuthService,
   ) {}
   
-  @Post("/create")
-  createUser(@Body(ValidationPipe) createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
+  @Post("/signUp")
+  async createUser(@Body(ValidationPipe) createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponse> {
+    const response = await this.usersService.createUser(createUserRequestDto);
+    return CreateUserResponse.newResponse(SuccessCode.CREATE_USER_SUCCESS, response);
   }
 
   @UseGuards(LocalAuthGuard)
-  @Post('/auth/login')
-  async login(@Request() req) {
-    console.log("login controller start")
-    return this.authService.login(req.user);
+  @Post('/login')
+  async login(@Request() req, @Response({ passthrough: true }) res) {
+    const user = req.user;
+    const {
+      accessToken,
+      ...accessOption
+    } = this.authService.getCookieWithJwtAccessToken(user.id);
+
+    const {
+      refreshToken,
+      ...refreshOption
+    } = this.authService.getCookieWithJwtRefreshToken(user.id);
+
+    await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
+
+    res.cookie('Authentication', accessToken, accessOption);
+    res.cookie('Refresh', refreshToken, refreshOption);
+
+    return user;
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('/logout')
+  async logOut(@Request() req, @Response({ passthrough: true }) res) {
+    const {
+      accessOption,
+      refreshOption,
+    } = this.authService.getCookieForLogOut();
+    await this.usersService.removeRefreshToken(req.user.id);
+
+    res.cookie('Authentication', '', accessOption);
+    res.cookie('Refresh', '', refreshOption);
+
+    return "logout success";
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Get('/refresh')
+  refresh(@Request() req, @Response({ passthrough: true })res){
+    const user = req.user;
+    const {
+      accessToken,
+      ...accessOption
+    } = this.authService.getCookieWithJwtAccessToken(user.id);
+    res.cookie('Authentication', accessToken, accessOption);
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -31,48 +78,17 @@ export class UsersController {
     return req.user;
   }
 
-  @Post("/existUserId")
-  existUserId(@Body() requestDto: UserRequestDto) {
-    return this.usersService.findOne(requestDto.userId);
-  }
-
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
-  updateUser(@Param('id') id : number, @Body() createUserDto: CreateUserDto) {
-    return this.usersService.updateUser(id, createUserDto);
+  async updateUserInfo(@Param('id') id : number, @Body() updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponse> {
+    const response = await this.usersService.updateUserInfo(id, updateUserRequestDto);
+    return UpdateUserResponse.newResponse(SuccessCode.UPDATE_USER_SUCCESS, response);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  deleteUser(@Param('id') id: number) {
-    return this.usersService.deleteUser(id);
+  deleteUser(@Param('id') id: number): BaseResponse {
+    this.usersService.deleteUser(id);
+    return BaseResponse.toSuccessResponse(SuccessCode.DELETE_USER_SUCCESS);
   }
-
-  /*
-  @Post("/findByUserId")
-  findUserId(@Body() userRequestDto: CreateUserDto) {
-    return this.usersService.findUserByUserId(userRequestDto);
-  }
-  */
-
-  /*
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
-  */
 }

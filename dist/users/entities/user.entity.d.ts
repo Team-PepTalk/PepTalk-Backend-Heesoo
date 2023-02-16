@@ -1,6 +1,7 @@
 export declare class User {
     id: number;
-    userId: string;
+    nickname: string;
     password: string;
     email: string;
+    currentHashedRefreshToken?: string;
 }
