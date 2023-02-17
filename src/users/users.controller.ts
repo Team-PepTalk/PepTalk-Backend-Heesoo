@@ -45,14 +45,11 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('/refresh')
-  refresh(@Request() req, @Response({ passthrough: true })res){
+  refresh(@Request() req, @Response({ passthrough: true }) res): BaseResponse{
     const user = req.user;
-    const {
-      accessToken,
-      ...accessOption
-    } = this.authService.getCookieWithJwtAccessToken(user.id);
-    res.cookie('Authentication', accessToken, accessOption);
-    return user;
+    this.usersService.refresh(user, res);
+
+    return BaseResponse.toSuccessResponse(SuccessCode.REFRESH_TOKEN_SUCCESS);
   }
 
   @UseGuards(JwtAuthGuard)

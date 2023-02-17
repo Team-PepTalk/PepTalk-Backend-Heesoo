@@ -13,7 +13,7 @@ export declare class UsersController {
     createUser(createUserRequestDto: CreateUserRequestDto, res: any): Promise<CreateUserResponse>;
     login(req: any, res: any): Promise<LoginUserResponse>;
     logOut(req: any, res: any): Promise<BaseResponse>;
-    refresh(req: any, res: any): any;
+    refresh(req: any, res: any): BaseResponse;
     me(req: any): any;
     updateUserInfo(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponse>;
     deleteUser(id: number): BaseResponse;

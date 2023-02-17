@@ -14,6 +14,7 @@ export declare class UsersService {
     createUser(createUserRequestDto: CreateUserRequestDto, res: any): Promise<CreateUserResponseDto>;
     login(user: User, res: any): Promise<LoginUserResponseDto>;
     logout(user: User, res: any): Promise<void>;
+    refresh(user: User, res: any): void;
     findOneByEmail(email: string): Promise<User>;
     updateUserInfo(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponseDto>;
     deleteUser(id: number): Promise<import("typeorm").DeleteResult>;

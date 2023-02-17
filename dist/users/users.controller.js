@@ -11,17 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -60,9 +49,8 @@ let UsersController = class UsersController {
     }
     refresh(req, res) {
         const user = req.user;
-        const _a = this.authService.getCookieWithJwtAccessToken(user.id), { accessToken } = _a, accessOption = __rest(_a, ["accessToken"]);
-        res.cookie('Authentication', accessToken, accessOption);
-        return user;
+        this.usersService.refresh(user, res);
+        return base_response_dto_1.default.toSuccessResponse("\uD1A0\uD070 \uC7AC\uBC1C\uAE09\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.");
     }
     me(req) {
         return req.user;
@@ -110,7 +98,7 @@ __decorate([
     __param(1, (0, common_1.Response)({ passthrough: true })),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", base_response_dto_1.default)
 ], UsersController.prototype, "refresh", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

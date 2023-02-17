@@ -68,6 +68,7 @@ export class UsersService {
     return LoginUserResponseDto.of(user.nickname);
   }
 
+  // Logout
   async logout(user: User, res) {
     const {
       accessOption,
@@ -77,6 +78,16 @@ export class UsersService {
 
     res.cookie('Authentication', '', accessOption);
     res.cookie('Refresh', '', refreshOption);
+  }
+
+  // Refresh
+  refresh(user: User, res) {
+    const {
+      accessToken,
+      ...accessOption
+    } = this.authService.getCookieWithJwtAccessToken(user.id);
+    
+    res.cookie('Authentication', accessToken, accessOption);
   }
 
   async findOneByEmail(email: string): Promise<User> {

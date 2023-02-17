@@ -92,6 +92,10 @@ let UsersService = class UsersService {
         res.cookie('Authentication', '', accessOption);
         res.cookie('Refresh', '', refreshOption);
     }
+    refresh(user, res) {
+        const _a = this.authService.getCookieWithJwtAccessToken(user.id), { accessToken } = _a, accessOption = __rest(_a, ["accessToken"]);
+        res.cookie('Authentication', accessToken, accessOption);
+    }
     async findOneByEmail(email) {
         return await this.usersRepository.findOneBy({ email });
     }
