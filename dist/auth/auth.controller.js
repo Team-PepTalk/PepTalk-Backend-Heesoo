@@ -15,14 +15,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const passport_1 = require("@nestjs/passport");
+const login_user_response_dto_1 = require("../users/dto/res/login-user-response.dto");
 const auth_service_1 = require("./auth.service");
 let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    googleAuthRedirect(req, res) {
+    async googleAuthRedirect(req, res) {
         console.log("googleAuth redirect Controller start");
-        return this.authService.googleLogin({ req, res });
+        const response = await this.authService.googleLogin({ req, res });
+        return login_user_response_dto_1.LoginUserResponse.newResponse("\uAD6C\uAE00 \uC18C\uC15C\uB85C\uADF8\uC778\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.", response);
     }
 };
 __decorate([
@@ -32,7 +34,7 @@ __decorate([
     __param(1, (0, common_1.Response)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AuthController.prototype, "googleAuthRedirect", null);
 AuthController = __decorate([
     (0, common_1.Controller)("oauth"),

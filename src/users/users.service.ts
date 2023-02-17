@@ -126,6 +126,7 @@ export class UsersService {
     await this.usersRepository.update(id, { currentHashedRefreshToken });
   }
 
+  // 토큰 매치 확인
   async getUserIfRefreshTokenMatches(refreshToken: string, id: number) {
     const user = await this.getById(id);
 
@@ -137,6 +138,8 @@ export class UsersService {
     if (isRefreshTokenMatching) {
       return user;
     }
+
+    throw new HttpException("토큰 정보가 만료됐거나 일치하지 않습니다.", HttpStatus.FORBIDDEN);
   }
 
   async removeRefreshToken(id: number) {

@@ -5,6 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/users/users.repository';
 import { JwtConfig } from 'src/configs/jwt-config';
 import { User } from 'src/users/entities/user.entity';
+import { LoginUserResponseDto } from 'src/users/dto/res/login-user-response.dto';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +36,7 @@ export class AuthService {
         };
     }
 
-    async googleLogin({ req, res }) {
+    async googleLogin({ req, res }): Promise<LoginUserResponseDto> {
         console.log("google login service start");
         console.log("req.user.email: " + JSON.stringify(req.user));
         //1. 회원조회
@@ -58,10 +59,7 @@ export class AuthService {
             "http://localhost:3000"
         );
 
-        return {
-            message: 'User information from google',
-            user
-        }
+        return LoginUserResponseDto.of(user.nickname);
     }
     
     // AccessToken을 발급 받음

@@ -42,6 +42,7 @@ const bcrypt = __importStar(require("bcrypt"));
 const jwt_1 = require("@nestjs/jwt");
 const users_repository_1 = require("../users/users.repository");
 const jwt_config_1 = require("../configs/jwt-config");
+const login_user_response_dto_1 = require("../users/dto/res/login-user-response.dto");
 let AuthService = class AuthService {
     constructor(usersService, jwtService, usersRepository) {
         this.usersService = usersService;
@@ -80,10 +81,7 @@ let AuthService = class AuthService {
         res.cookie('Authentication', req.user.accessToken);
         res.cookie('Refresh', req.user.refreshToken);
         res.redirect("http://localhost:3000");
-        return {
-            message: 'User information from google',
-            user
-        };
+        return login_user_response_dto_1.LoginUserResponseDto.of(user.nickname);
     }
     getCookieWithJwtAccessToken(id) {
         console.log("auth service / getCookieWithJwtAccessToken method start");

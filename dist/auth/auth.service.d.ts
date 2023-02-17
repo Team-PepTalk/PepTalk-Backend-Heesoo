@@ -1,7 +1,7 @@
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/users/users.repository';
-import { User } from 'src/users/entities/user.entity';
+import { LoginUserResponseDto } from 'src/users/dto/res/login-user-response.dto';
 export declare class AuthService {
     private usersService;
     private jwtService;
@@ -14,10 +14,7 @@ export declare class AuthService {
     googleLogin({ req, res }: {
         req: any;
         res: any;
-    }): Promise<{
-        message: string;
-        user: User;
-    }>;
+    }): Promise<LoginUserResponseDto>;
     getCookieWithJwtAccessToken(id: number): {
         accessToken: string;
         domain: string;

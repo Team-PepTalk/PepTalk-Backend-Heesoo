@@ -126,6 +126,7 @@ let UsersService = class UsersService {
         if (isRefreshTokenMatching) {
             return user;
         }
+        throw new common_1.HttpException("토큰 정보가 만료됐거나 일치하지 않습니다.", common_1.HttpStatus.FORBIDDEN);
     }
     async removeRefreshToken(id) {
         return this.usersRepository.update(id, {
