@@ -22,7 +22,7 @@ export class AuthService {
         if (!(await bcrypt.compare(password, user?.password ?? ''))) {
             throw new HttpException("로그인에 실패했습니다.", HttpStatus.BAD_REQUEST);
         }
-        
+
         console.log("user" + user.id);
         return user;
     }
@@ -72,12 +72,6 @@ export class AuthService {
             secret: JwtConfig.JWT_ACCESS_TOKEN_SECRET,
             expiresIn: `${JwtConfig.JWT_ACCESS_TOKEN_EXPIRATION_TIME}s`
         });
-        /*const token = this.jwtService.sign(payload, {
-            secret: this.configService.get('JWT_ACCESS_TOKEN_SECRET'),
-            expiresIn: `${this.configService.get(
-                'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-            )}s`,
-        });*/
 
         return {
             accessToken: token,

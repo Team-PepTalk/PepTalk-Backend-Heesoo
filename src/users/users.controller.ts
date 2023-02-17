@@ -49,7 +49,7 @@ export class UsersController {
     const user = req.user;
     this.usersService.refresh(user, res);
 
-    return BaseResponse.toSuccessResponse(SuccessCode.REFRESH_TOKEN_SUCCESS);
+    return BaseResponse.toSuccessResponse(SuccessCode.ACCESSTOKEN_USER_SUCCESS);
   }
 
   @UseGuards(JwtAuthGuard)
