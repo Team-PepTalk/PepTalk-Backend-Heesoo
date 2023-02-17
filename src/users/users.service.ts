@@ -8,6 +8,7 @@ import { CreateUserResponseDto } from './dto/res/create-user-response.dto';
 import { UpdateUserResponseDto } from './dto/res/update-user-response.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginUserResponseDto } from './dto/res/login-user-response.dto';
+import BaseResponse from 'src/base-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -65,6 +66,17 @@ export class UsersService {
     res.cookie('Refresh', refreshToken, refreshOption);
 
     return LoginUserResponseDto.of(user.nickname);
+  }
+
+  async logout(user: User, res) {
+    const {
+      accessOption,
+      refreshOption,
+    } = this.authService.getCookieForLogOut();
+    await this.removeRefreshToken(user.id);
+
+    res.cookie('Authentication', '', accessOption);
+    res.cookie('Refresh', '', refreshOption);
   }
 
   async findOneByEmail(email: string): Promise<User> {

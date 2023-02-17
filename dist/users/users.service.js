@@ -86,6 +86,12 @@ let UsersService = class UsersService {
         res.cookie('Refresh', refreshToken, refreshOption);
         return login_user_response_dto_1.LoginUserResponseDto.of(user.nickname);
     }
+    async logout(user, res) {
+        const { accessOption, refreshOption, } = this.authService.getCookieForLogOut();
+        await this.removeRefreshToken(user.id);
+        res.cookie('Authentication', '', accessOption);
+        res.cookie('Refresh', '', refreshOption);
+    }
     async findOneByEmail(email) {
         return await this.usersRepository.findOneBy({ email });
     }

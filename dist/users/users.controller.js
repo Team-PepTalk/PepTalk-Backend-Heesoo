@@ -54,11 +54,9 @@ let UsersController = class UsersController {
         return login_user_response_dto_1.LoginUserResponse.newResponse("\uB85C\uADF8\uC778\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.", response);
     }
     async logOut(req, res) {
-        const { accessOption, refreshOption, } = this.authService.getCookieForLogOut();
-        await this.usersService.removeRefreshToken(req.user.id);
-        res.cookie('Authentication', '', accessOption);
-        res.cookie('Refresh', '', refreshOption);
-        return "logout success";
+        const user = req.user;
+        await this.usersService.logout(user, res);
+        return base_response_dto_1.default.toSuccessResponse("\uB85C\uADF8\uC544\uC6C3\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.");
     }
     refresh(req, res) {
         const user = req.user;

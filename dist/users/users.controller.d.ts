@@ -12,7 +12,7 @@ export declare class UsersController {
     constructor(usersService: UsersService, authService: AuthService);
     createUser(createUserRequestDto: CreateUserRequestDto, res: any): Promise<CreateUserResponse>;
     login(req: any, res: any): Promise<LoginUserResponse>;
-    logOut(req: any, res: any): Promise<string>;
+    logOut(req: any, res: any): Promise<BaseResponse>;
     refresh(req: any, res: any): any;
     me(req: any): any;
     updateUserInfo(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponse>;

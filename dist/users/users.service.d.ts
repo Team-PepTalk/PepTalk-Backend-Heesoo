@@ -13,6 +13,7 @@ export declare class UsersService {
     transformPassword(user: CreateUserRequestDto): Promise<string>;
     createUser(createUserRequestDto: CreateUserRequestDto, res: any): Promise<CreateUserResponseDto>;
     login(user: User, res: any): Promise<LoginUserResponseDto>;
+    logout(user: User, res: any): Promise<void>;
     findOneByEmail(email: string): Promise<User>;
     updateUserInfo(id: number, updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponseDto>;
     deleteUser(id: number): Promise<import("typeorm").DeleteResult>;

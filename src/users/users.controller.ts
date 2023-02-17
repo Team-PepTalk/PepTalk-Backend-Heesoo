@@ -36,17 +36,11 @@ export class UsersController {
 
   @UseGuards(JwtRefreshGuard)
   @Post('/logout')
-  async logOut(@Request() req, @Response({ passthrough: true }) res) {
-    const {
-      accessOption,
-      refreshOption,
-    } = this.authService.getCookieForLogOut();
-    await this.usersService.removeRefreshToken(req.user.id);
+  async logOut(@Request() req, @Response({ passthrough: true }) res): Promise<BaseResponse>{
+    const user = req.user;
+    await this.usersService.logout(user, res);
 
-    res.cookie('Authentication', '', accessOption);
-    res.cookie('Refresh', '', refreshOption);
-
-    return "logout success";
+    return BaseResponse.toSuccessResponse(SuccessCode.LOGOUT_USER_SUCCESS);
   }
 
   @UseGuards(JwtAuthGuard)
