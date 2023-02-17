@@ -1,6 +1,7 @@
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/users/users.repository';
+import { User } from 'src/users/entities/user.entity';
 export declare class AuthService {
     private usersService;
     private jwtService;
@@ -15,7 +16,7 @@ export declare class AuthService {
         res: any;
     }): Promise<{
         message: string;
-        user: import("../users/entities/user.entity").User;
+        user: User;
     }>;
     getCookieWithJwtAccessToken(id: number): {
         accessToken: string;

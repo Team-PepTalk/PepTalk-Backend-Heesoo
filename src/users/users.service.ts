@@ -7,6 +7,7 @@ import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
 import { CreateUserResponseDto } from './dto/res/create-user-response.dto';
 import { UpdateUserResponseDto } from './dto/res/update-user-response.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { LoginUserResponseDto } from './dto/res/login-user-response.dto';
 
 @Injectable()
 export class UsersService {
@@ -35,16 +36,7 @@ export class UsersService {
 
     const signUpUser = await this.usersRepository.save(user);
 
-    /*const {
-      accessToken,
-      ...accessOption
-    } = this.authService.getCookieWithJwtAccessToken(user.id);*/
     const access = this.authService.getCookieWithJwtAccessToken(user.id);
-
-    /*const {
-      refreshToken,
-      ...refreshOption
-    } = this.authService.getCookieWithJwtRefreshToken(user.id);*/
     const refresh = this.authService.getCookieWithJwtRefreshToken(user.id);
 
     await this.setCurrentRefreshToken(refresh.refreshToken, user.id);
@@ -52,10 +44,27 @@ export class UsersService {
     res.cookie('Authentication', access.accessToken);
     res.cookie('Refresh', refresh.refreshToken);
 
-    //res.cookie('Authentication', accessToken, accessOption);
-    //res.cookie('Refresh', refreshToken, refreshOption);
-
     return CreateUserResponseDto.of(signUpUser.nickname);
+  }
+
+  // Login
+  async login(user: User, res): Promise<LoginUserResponseDto> {
+    const {
+      accessToken,
+      ...accessOption
+    } = this.authService.getCookieWithJwtAccessToken(user.id);
+
+    const {
+      refreshToken,
+      ...refreshOption
+    } = this.authService.getCookieWithJwtRefreshToken(user.id);
+
+    await this.setCurrentRefreshToken(refreshToken, user.id);
+
+    res.cookie('Authentication', accessToken, accessOption);
+    res.cookie('Refresh', refreshToken, refreshOption);
+
+    return LoginUserResponseDto.of(user.nickname);
   }
 
   async findOneByEmail(email: string): Promise<User> {

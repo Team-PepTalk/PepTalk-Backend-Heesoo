@@ -5,12 +5,13 @@ import { UpdateUserResponse } from './dto/res/update-user-response.dto';
 import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
 import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
 import { CreateUserResponse } from './dto/res/create-user-response.dto';
+import { LoginUserResponse } from './dto/res/login-user-response.dto';
 export declare class UsersController {
     private readonly usersService;
     private authService;
     constructor(usersService: UsersService, authService: AuthService);
     createUser(createUserRequestDto: CreateUserRequestDto, res: any): Promise<CreateUserResponse>;
-    login(req: any, res: any): Promise<any>;
+    login(req: any, res: any): Promise<LoginUserResponse>;
     logOut(req: any, res: any): Promise<string>;
     refresh(req: any, res: any): any;
     me(req: any): any;

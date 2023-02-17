@@ -38,6 +38,7 @@ const update_user_response_dto_1 = require("./dto/res/update-user-response.dto")
 const update_user_request_dto_1 = require("./dto/req/update-user-request.dto");
 const create_user_request_dto_1 = require("./dto/req/create-user-request.dto");
 const create_user_response_dto_1 = require("./dto/res/create-user-response.dto");
+const login_user_response_dto_1 = require("./dto/res/login-user-response.dto");
 let UsersController = class UsersController {
     constructor(usersService, authService) {
         this.usersService = usersService;
@@ -49,12 +50,8 @@ let UsersController = class UsersController {
     }
     async login(req, res) {
         const user = req.user;
-        const _a = this.authService.getCookieWithJwtAccessToken(user.id), { accessToken } = _a, accessOption = __rest(_a, ["accessToken"]);
-        const _b = this.authService.getCookieWithJwtRefreshToken(user.id), { refreshToken } = _b, refreshOption = __rest(_b, ["refreshToken"]);
-        await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
-        res.cookie('Authentication', accessToken, accessOption);
-        res.cookie('Refresh', refreshToken, refreshOption);
-        return user;
+        const response = await this.usersService.login(user, res);
+        return login_user_response_dto_1.LoginUserResponse.newResponse("\uB85C\uADF8\uC778\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.", response);
     }
     async logOut(req, res) {
         const { accessOption, refreshOption, } = this.authService.getCookieForLogOut();

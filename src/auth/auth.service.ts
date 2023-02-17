@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { UsersRepository } from 'src/users/users.repository';
 import { JwtConfig } from 'src/configs/jwt-config';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -15,17 +16,13 @@ export class AuthService {
     ) {}
 
     async validateUser(email: string, password: string): Promise<any> {
-        const user = await this.usersService.findOneByEmail(email);
+        const user: User = await this.usersService.findOneByEmail(email);
 
         // DB에는 해시된 암호만 저장 후 데이터 비교
         if (!(await bcrypt.compare(password, user?.password ?? ''))) {
             throw new HttpException("로그인에 실패했습니다.", HttpStatus.BAD_REQUEST);
         }
-
-        /*if (user && user.password === password) {
-            const { password, ...result } = user;
-            return result;
-        }*/
+        
         console.log("user" + user.id);
         return user;
     }

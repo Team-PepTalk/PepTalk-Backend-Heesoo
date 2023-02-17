@@ -9,6 +9,7 @@ import { UpdateUserResponse } from './dto/res/update-user-response.dto';
 import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
 import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
 import { CreateUserResponse } from './dto/res/create-user-response.dto';
+import { LoginUserResponse } from './dto/res/login-user-response.dto';
 
 @Controller('users')
 export class UsersController {
@@ -26,24 +27,11 @@ export class UsersController {
 
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  async login(@Request() req, @Response({ passthrough: true }) res) {
+  async login(@Request() req, @Response({ passthrough: true }) res): Promise<LoginUserResponse> {
     const user = req.user;
-    const {
-      accessToken,
-      ...accessOption
-    } = this.authService.getCookieWithJwtAccessToken(user.id);
+    const response = await this.usersService.login(user, res);
 
-    const {
-      refreshToken,
-      ...refreshOption
-    } = this.authService.getCookieWithJwtRefreshToken(user.id);
-
-    await this.usersService.setCurrentRefreshToken(refreshToken, user.id);
-
-    res.cookie('Authentication', accessToken, accessOption);
-    res.cookie('Refresh', refreshToken, refreshOption);
-
-    return user;
+    return LoginUserResponse.newResponse(SuccessCode.LOGIN_USER_SUCCESS, response);
   }
 
   @UseGuards(JwtRefreshGuard)

@@ -34,6 +34,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
@@ -42,6 +53,7 @@ const bcrypt = __importStar(require("bcrypt"));
 const create_user_response_dto_1 = require("./dto/res/create-user-response.dto");
 const update_user_response_dto_1 = require("./dto/res/update-user-response.dto");
 const auth_service_1 = require("../auth/auth.service");
+const login_user_response_dto_1 = require("./dto/res/login-user-response.dto");
 let UsersService = class UsersService {
     constructor(usersRepository, authService) {
         this.usersRepository = usersRepository;
@@ -65,6 +77,14 @@ let UsersService = class UsersService {
         res.cookie('Authentication', access.accessToken);
         res.cookie('Refresh', refresh.refreshToken);
         return create_user_response_dto_1.CreateUserResponseDto.of(signUpUser.nickname);
+    }
+    async login(user, res) {
+        const _a = this.authService.getCookieWithJwtAccessToken(user.id), { accessToken } = _a, accessOption = __rest(_a, ["accessToken"]);
+        const _b = this.authService.getCookieWithJwtRefreshToken(user.id), { refreshToken } = _b, refreshOption = __rest(_b, ["refreshToken"]);
+        await this.setCurrentRefreshToken(refreshToken, user.id);
+        res.cookie('Authentication', accessToken, accessOption);
+        res.cookie('Refresh', refreshToken, refreshOption);
+        return login_user_response_dto_1.LoginUserResponseDto.of(user.nickname);
     }
     async findOneByEmail(email) {
         return await this.usersRepository.findOneBy({ email });
