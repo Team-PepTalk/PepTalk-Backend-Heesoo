@@ -31,6 +31,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
@@ -38,14 +41,16 @@ const users_repository_1 = require("./users.repository");
 const bcrypt = __importStar(require("bcrypt"));
 const create_user_response_dto_1 = require("./dto/res/create-user-response.dto");
 const update_user_response_dto_1 = require("./dto/res/update-user-response.dto");
+const auth_service_1 = require("../auth/auth.service");
 let UsersService = class UsersService {
-    constructor(usersRepository) {
+    constructor(usersRepository, authService) {
         this.usersRepository = usersRepository;
+        this.authService = authService;
     }
     async transformPassword(user) {
         return user.password = await bcrypt.hash(user.password, 10);
     }
-    async createUser(createUserRequestDto) {
+    async createUser(createUserRequestDto, res) {
         const cryptedssword = await this.transformPassword(createUserRequestDto);
         const { nickname, password, email } = createUserRequestDto;
         const user = this.usersRepository.create({
@@ -54,6 +59,11 @@ let UsersService = class UsersService {
             email
         });
         const signUpUser = await this.usersRepository.save(user);
+        const access = this.authService.getCookieWithJwtAccessToken(user.id);
+        const refresh = this.authService.getCookieWithJwtRefreshToken(user.id);
+        await this.setCurrentRefreshToken(refresh.refreshToken, user.id);
+        res.cookie('Authentication', access.accessToken);
+        res.cookie('Refresh', refresh.refreshToken);
         return create_user_response_dto_1.CreateUserResponseDto.of(signUpUser.nickname);
     }
     async findOneByEmail(email) {
@@ -102,7 +112,9 @@ let UsersService = class UsersService {
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_repository_1.UsersRepository])
+    __param(1, (0, common_1.Inject)((0, common_1.forwardRef)(() => auth_service_1.AuthService))),
+    __metadata("design:paramtypes", [users_repository_1.UsersRepository,
+        auth_service_1.AuthService])
 ], UsersService);
 exports.UsersService = UsersService;
 //# sourceMappingURL=users.service.js.map

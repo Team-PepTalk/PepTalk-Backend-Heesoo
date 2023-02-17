@@ -18,8 +18,9 @@ export class UsersController {
   ) {}
   
   @Post("/signUp")
-  async createUser(@Body(ValidationPipe) createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponse> {
-    const response = await this.usersService.createUser(createUserRequestDto);
+  async createUser(@Body(ValidationPipe) createUserRequestDto: CreateUserRequestDto, @Response({ passthrough: true }) res): Promise<CreateUserResponse> {
+    const response = await this.usersService.createUser(createUserRequestDto, res);
+
     return CreateUserResponse.newResponse(SuccessCode.CREATE_USER_SUCCESS, response);
   }
 
@@ -60,7 +61,7 @@ export class UsersController {
     return "logout success";
   }
 
-  @UseGuards(JwtRefreshGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('/refresh')
   refresh(@Request() req, @Response({ passthrough: true })res){
     const user = req.user;
@@ -78,9 +79,11 @@ export class UsersController {
     return req.user;
   }
 
+  //@UseGuards(JwtRefreshGuard)
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateUserInfo(@Param('id') id : number, @Body() updateUserRequestDto: UpdateUserRequestDto): Promise<UpdateUserResponse> {
+    console.log("updater user controller start");
     const response = await this.usersService.updateUserInfo(id, updateUserRequestDto);
     return UpdateUserResponse.newResponse(SuccessCode.UPDATE_USER_SUCCESS, response);
   }
@@ -88,6 +91,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   deleteUser(@Param('id') id: number): BaseResponse {
+
     this.usersService.deleteUser(id);
     return BaseResponse.toSuccessResponse(SuccessCode.DELETE_USER_SUCCESS);
   }

@@ -21,8 +21,9 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         super({
             jwtFromRequest: passport_jwt_1.ExtractJwt.fromExtractors([
                 (request) => {
-                    var _a;
-                    return (_a = request === null || request === void 0 ? void 0 : request.cookies) === null || _a === void 0 ? void 0 : _a.Authentiation;
+                    var _a, _b;
+                    console.log("request?.cookies?.Authentication" + ((_a = request === null || request === void 0 ? void 0 : request.cookies) === null || _a === void 0 ? void 0 : _a.Authentication));
+                    return (_b = request === null || request === void 0 ? void 0 : request.cookies) === null || _b === void 0 ? void 0 : _b.Authentication;
                 },
             ]),
             secretOrKey: jwt_config_1.JwtConfig.JWT_ACCESS_TOKEN_SECRET,

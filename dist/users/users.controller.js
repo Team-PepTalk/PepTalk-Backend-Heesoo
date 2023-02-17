@@ -43,8 +43,8 @@ let UsersController = class UsersController {
         this.usersService = usersService;
         this.authService = authService;
     }
-    async createUser(createUserRequestDto) {
-        const response = await this.usersService.createUser(createUserRequestDto);
+    async createUser(createUserRequestDto, res) {
+        const response = await this.usersService.createUser(createUserRequestDto, res);
         return create_user_response_dto_1.CreateUserResponse.newResponse("\uD68C\uC6D0\uAC00\uC785\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.", response);
     }
     async login(req, res) {
@@ -73,6 +73,7 @@ let UsersController = class UsersController {
         return req.user;
     }
     async updateUserInfo(id, updateUserRequestDto) {
+        console.log("updater user controller start");
         const response = await this.usersService.updateUserInfo(id, updateUserRequestDto);
         return update_user_response_dto_1.UpdateUserResponse.newResponse("\uD68C\uC6D0 \uC218\uC815\uC744 \uC131\uACF5\uD588\uC2B5\uB2C8\uB2E4.", response);
     }
@@ -84,8 +85,9 @@ let UsersController = class UsersController {
 __decorate([
     (0, common_1.Post)("/signUp"),
     __param(0, (0, common_1.Body)(common_1.ValidationPipe)),
+    __param(1, (0, common_1.Response)({ passthrough: true })),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_user_request_dto_1.CreateUserRequestDto]),
+    __metadata("design:paramtypes", [create_user_request_dto_1.CreateUserRequestDto, Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUser", null);
 __decorate([
@@ -107,7 +109,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "logOut", null);
 __decorate([
-    (0, common_1.UseGuards)(jwt_refresh_guard_1.JwtRefreshGuard),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('/refresh'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Response)({ passthrough: true })),

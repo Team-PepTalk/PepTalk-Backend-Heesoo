@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { UsersRepository } from './users.repository';
 import * as bcrypt from 'bcrypt';
@@ -6,11 +6,16 @@ import { UpdateUserRequestDto } from './dto/req/update-user-request.dto';
 import { CreateUserRequestDto } from './dto/req/create-user-request.dto';
 import { CreateUserResponseDto } from './dto/res/create-user-response.dto';
 import { UpdateUserResponseDto } from './dto/res/update-user-response.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @Injectable()
 export class UsersService {
 
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    @Inject(forwardRef(() => AuthService))
+    private authService: AuthService,
+  ) {}
   
   // 비밀번호 암호화
   async transformPassword(user: CreateUserRequestDto) {
@@ -18,7 +23,7 @@ export class UsersService {
   }
 
   // SignUp
-  async createUser(createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponseDto> {
+  async createUser(createUserRequestDto: CreateUserRequestDto, res): Promise<CreateUserResponseDto> {
     const cryptedssword = await this.transformPassword(createUserRequestDto);
     
     const { nickname, password, email } = createUserRequestDto;
@@ -29,6 +34,26 @@ export class UsersService {
     })
 
     const signUpUser = await this.usersRepository.save(user);
+
+    /*const {
+      accessToken,
+      ...accessOption
+    } = this.authService.getCookieWithJwtAccessToken(user.id);*/
+    const access = this.authService.getCookieWithJwtAccessToken(user.id);
+
+    /*const {
+      refreshToken,
+      ...refreshOption
+    } = this.authService.getCookieWithJwtRefreshToken(user.id);*/
+    const refresh = this.authService.getCookieWithJwtRefreshToken(user.id);
+
+    await this.setCurrentRefreshToken(refresh.refreshToken, user.id);
+
+    res.cookie('Authentication', access.accessToken);
+    res.cookie('Refresh', refresh.refreshToken);
+
+    //res.cookie('Authentication', accessToken, accessOption);
+    //res.cookie('Refresh', refreshToken, refreshOption);
 
     return CreateUserResponseDto.of(signUpUser.nickname);
   }

@@ -9,7 +9,7 @@ export declare class UsersController {
     private readonly usersService;
     private authService;
     constructor(usersService: UsersService, authService: AuthService);
-    createUser(createUserRequestDto: CreateUserRequestDto): Promise<CreateUserResponse>;
+    createUser(createUserRequestDto: CreateUserRequestDto, res: any): Promise<CreateUserResponse>;
     login(req: any, res: any): Promise<any>;
     logOut(req: any, res: any): Promise<string>;
     refresh(req: any, res: any): any;
